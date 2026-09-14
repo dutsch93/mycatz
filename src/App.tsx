@@ -5,11 +5,15 @@ import Stats from './screens/Stats'
 import Profile from './screens/Profile'
 import Settings from './screens/Settings'
 import OnboardingWizard from './screens/onboarding/OnboardingWizard'
+import CheckEmail from './screens/onboarding/CheckEmail'
+import CompleteOnboarding from './screens/onboarding/CompleteOnboarding'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/onboarding" element={<OnboardingWizard />} />
+      <Route path="/onboarding/check-email" element={<CheckEmail />} />
+      <Route path="/onboarding/complete" element={<CompleteOnboarding />} />
       <Route
         path="/"
         element={
