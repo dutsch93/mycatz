@@ -1,0 +1,40 @@
+:root {
+  /* Hintergründe */
+  --bg-page: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --bg-input: #F5F3F0;
+
+  /* Akzentfarben (funktional gebunden) */
+  --color-apricot: #E8A87C;
+  --color-sage: #85B79D;
+  --color-warm-brown: #D4A574;
+  --color-muted-red: #C97C7C;
+  --color-gray: #8E8E93;
+
+  /* Text */
+  --text-primary: #1C1C1E;
+  --text-secondary: #8E8E93;
+  --text-on-color: #FFFFFF;
+
+  /* Borders */
+  --border-default: #E8E6E1;
+
+  /* Ampelsystem (Fütterung) */
+  --ampel-good: #85B79D;   /* >= 67% Tagesziel */
+  --ampel-mid: #D4A574;    /* 34-66% Tagesziel */
+  --ampel-low: #C97C7C;    /* 0-33% Tagesziel */
+
+  /* Typografie */
+  --font-family: 'Inter', sans-serif;
+  --font-size-headline: 22px;
+  --font-weight-headline: 500;
+  --font-size-body: 16px;
+  --font-weight-body: 400;
+  --font-size-label: 13px;
+
+  /* Layout */
+  --content-max-width: 440px;
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --touch-target-min: 44px;
+}
