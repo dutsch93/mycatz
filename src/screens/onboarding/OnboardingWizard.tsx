@@ -39,7 +39,7 @@ function seedDraft(): OnboardingDraft {
 
 export default function OnboardingWizard() {
   const navigate = useNavigate()
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
   const [draft, setDraft] = useState<OnboardingDraft>(seedDraft)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +70,28 @@ export default function OnboardingWizard() {
     } finally {
       setSending(false)
     }
+  }
+
+  if (step === 0) {
+    return (
+      <div className="min-h-screen bg-page px-4 py-6 flex items-center">
+        <div className="max-w-app mx-auto text-center flex flex-col gap-4">
+          <div className="text-5xl">🐾</div>
+          <h2>Willkommen bei MyCatz</h2>
+          <p className="text-text-secondary">
+            In wenigen Schritten richten wir euren Haushalt ein: eure Katze(n), Futterarten
+            und Gewohnheiten, die ihr täglich tracken möchtet.
+          </p>
+          <button
+            type="button"
+            onClick={() => setStep(1)}
+            className="min-h-[44px] rounded-control bg-apricot text-text-on-color"
+          >
+            Onboarding starten
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (

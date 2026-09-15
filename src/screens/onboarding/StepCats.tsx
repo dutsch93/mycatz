@@ -6,8 +6,16 @@ interface Props {
   onChange: (draft: OnboardingDraft) => void
 }
 
+const AGE_OPTIONS = Array.from({ length: 21 }, (_, i) => i) // 0–20 Jahre
+const KG_OPTIONS = Array.from({ length: 21 }, (_, i) => i) // 0–20 kg
+const DEZI_OPTIONS = Array.from({ length: 10 }, (_, i) => i) // 0–9 (eine Nachkommastelle)
+
+function ageLabel(years: number) {
+  return years === 1 ? '1 Jahr' : `${years} Jahre`
+}
+
 function emptyCatForm() {
-  return { name: '', age: '', breed: '', weightKg: '', tagsInput: '' }
+  return { name: '', age: '', breed: '', weightKgPart: '', weightDeziPart: '0', tagsInput: '' }
 }
 
 export default function StepCats({ draft, onChange }: Props) {
@@ -15,12 +23,15 @@ export default function StepCats({ draft, onChange }: Props) {
 
   function addCat() {
     if (!form.name.trim()) return
+    const weightKg = form.weightKgPart
+      ? `${form.weightKgPart}.${form.weightDeziPart || '0'}`
+      : ''
     const newCat: DraftCat = {
       localId: makeLocalId(),
       name: form.name.trim(),
       age: form.age.trim(),
       breed: form.breed.trim(),
-      weightKg: form.weightKg.trim(),
+      weightKg,
       tags: form.tagsInput
         .split(',')
         .map((t) => t.trim())
@@ -79,29 +90,57 @@ export default function StepCats({ draft, onChange }: Props) {
           placeholder="Name"
           className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
         />
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={form.age}
-            onChange={(e) => setForm({ ...form, age: e.target.value })}
-            placeholder="Alter (z. B. 3 Jahre)"
-            className="flex-1 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-          />
-          <input
-            type="text"
-            value={form.breed}
-            onChange={(e) => setForm({ ...form, breed: e.target.value })}
-            placeholder="Rasse"
-            className="flex-1 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-          />
-        </div>
         <input
-          type="number"
-          value={form.weightKg}
-          onChange={(e) => setForm({ ...form, weightKg: e.target.value })}
-          placeholder="Gewicht in kg"
+          type="text"
+          value={form.breed}
+          onChange={(e) => setForm({ ...form, breed: e.target.value })}
+          placeholder="Rasse"
           className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
         />
+        <div className="flex gap-3">
+          <select
+            value={form.age}
+            onChange={(e) => setForm({ ...form, age: e.target.value })}
+            className="flex-1 min-w-0 min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border text-text-primary"
+          >
+            <option value="">Alter</option>
+            {AGE_OPTIONS.map((y) => (
+              <option key={y} value={ageLabel(y)}>
+                {ageLabel(y)}
+              </option>
+            ))}
+          </select>
+
+          <div className="flex-1 min-w-0 flex items-center gap-1 min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border">
+            <select
+              value={form.weightKgPart}
+              onChange={(e) => setForm({ ...form, weightKgPart: e.target.value })}
+              className="flex-1 min-w-0 bg-input text-text-primary"
+              aria-label="Gewicht (kg)"
+            >
+              <option value="">–</option>
+              {KG_OPTIONS.map((kg) => (
+                <option key={kg} value={kg}>
+                  {kg}
+                </option>
+              ))}
+            </select>
+            <span className="text-text-secondary">,</span>
+            <select
+              value={form.weightDeziPart}
+              onChange={(e) => setForm({ ...form, weightDeziPart: e.target.value })}
+              className="flex-1 min-w-0 bg-input text-text-primary"
+              aria-label="Gewicht (100g-Schritte)"
+            >
+              {DEZI_OPTIONS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <span className="text-text-secondary text-[13px]">kg</span>
+          </div>
+        </div>
         <input
           type="text"
           value={form.tagsInput}

@@ -76,3 +76,47 @@ export interface HabitDefinition {
   category: HabitCategory
   created_at: string
 }
+
+export interface FeedingLog {
+  id: string
+  cat_id: string
+  food_type_id: string
+  amount_g: number
+  logged_by: string | null
+  logged_at: string
+  source: FeedingSource
+  date: string
+  note: string | null
+}
+
+export interface PlayLog {
+  id: string
+  cat_id: string
+  duration_min: number
+  logged_by: string | null
+  logged_at: string
+  date: string
+  note: string | null
+}
+
+export interface HabitLog {
+  id: string
+  cat_id: string
+  habit_id: string
+  date: string
+  value: boolean
+  count: number | null
+  selected_option: string | null
+  note: string | null
+  logged_by: string | null
+  logged_at: string
+}
+
+export interface WeightLog {
+  id: string
+  cat_id: string
+  weight_kg: number
+  date: string
+  logged_by: string | null
+  logged_at: string
+}
