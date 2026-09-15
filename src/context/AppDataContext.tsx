@@ -15,11 +15,18 @@ export type Target = { type: 'cat'; id: string } | { type: 'group'; id: string }
 const TARGET_STORAGE_KEY = 'mycatz_selected_target'
 
 interface AppDataValue
-  extends ReturnType<typeof useHouseholdData>,
-    ReturnType<typeof useDayLogs>,
+  extends Omit<ReturnType<typeof useHouseholdData>, 'loading' | 'refresh'>,
+    Omit<ReturnType<typeof useDayLogs>, 'loading' | 'refresh'>,
     Pick<ReturnType<typeof useNfcTags>, 'addTag' | 'deleteTag'> {
   userId: string | null
   authLoading: boolean
+  // "loading"/"refresh" beziehen sich auf die Haushaltsdaten (Katzen, Futterarten, Habits) —
+  // die gleichnamigen Felder aus useDayLogs sind unten explizit umbenannt, damit sie sich beim
+  // Zusammenführen nicht überschreiben (siehe AppDataProvider).
+  loading: boolean
+  refresh: () => void
+  dayLogsLoading: boolean
+  refreshDayLogs: () => void
   target: Target | null
   setTarget: (t: Target) => void
   catIdsForTarget: string[]
@@ -51,12 +58,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return householdData.groups.find((g) => g.id === target.id)?.catIds ?? []
   }, [target, householdData.groups])
 
-  const dayLogs = useDayLogs(catIdsForTarget, selectedDate, userId)
+  const { loading: dayLogsLoading, refresh: refreshDayLogs, ...dayLogs } = useDayLogs(
+    catIdsForTarget,
+    selectedDate,
+    userId,
+  )
   const nfcTagsData = useNfcTags(householdData.household?.id ?? null)
   const [nfcPulse, setNfcPulse] = useState<string | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
 
-  useRealtime(catIdsForTarget, dayLogs.refresh)
+  useRealtime(catIdsForTarget, refreshDayLogs)
 
   async function logNfcTag(tagIdentifier: string) {
     const tag = nfcTagsData.tags.find((t) => t.tag_identifier === tagIdentifier)
@@ -146,6 +157,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         authLoading,
         ...householdData,
         ...dayLogs,
+        dayLogsLoading,
+        refreshDayLogs,
         target,
         setTarget,
         catIdsForTarget,

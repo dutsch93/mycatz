@@ -17,12 +17,23 @@ export default function Login() {
     try {
       const { error: authError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/` },
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          // Kein neuer Account bei unbekannter/falsch getippter E-Mail — nur bestehende
+          // Nutzer (mit Haushalt aus dem Onboarding) sollen sich hier einloggen können.
+          shouldCreateUser: false,
+        },
       })
       if (authError) throw authError
       setSent(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'E-Mail konnte nicht gesendet werden.')
+      setError(
+        err instanceof Error && err.message.toLowerCase().includes('signups not allowed')
+          ? 'Für diese E-Mail existiert noch kein Haushalt. Bitte starte zuerst das Onboarding.'
+          : err instanceof Error
+            ? err.message
+            : 'E-Mail konnte nicht gesendet werden.',
+      )
     } finally {
       setSending(false)
     }

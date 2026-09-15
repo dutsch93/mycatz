@@ -34,13 +34,56 @@ export default function Settings() {
   const [tagIdentifier, setTagIdentifier] = useState('')
   const [scanning, setScanning] = useState(false)
   const [scanError, setScanError] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  // Wandelt v.a. FK-Constraint-Fehler ("wird noch benutzt") in eine verständliche
+  // Meldung um, statt den rohen Postgres-Fehler stumm verschwinden zu lassen.
+  function friendlyError(err: unknown): string {
+    const message = err instanceof Error ? err.message : String(err)
+    if (message.includes('foreign key') || message.includes('violates')) {
+      return 'Kann nicht gelöscht werden — wird noch in bestehenden Einträgen verwendet.'
+    }
+    return message
+  }
 
   async function saveNewFoodType() {
     if (!foodName.trim() || !foodPortion) return
-    await addFoodType(foodName.trim(), foodCategory, Number(foodPortion))
-    setFoodName('')
-    setFoodCategory('custom')
-    setFoodPortion('')
+    setErrorMsg(null)
+    try {
+      await addFoodType(foodName.trim(), foodCategory, Number(foodPortion))
+      setFoodName('')
+      setFoodCategory('custom')
+      setFoodPortion('')
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
+  }
+
+  async function handleUpdatePortion(id: string, value: number) {
+    setErrorMsg(null)
+    try {
+      await updateFoodTypePortion(id, value)
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
+  }
+
+  async function handleDeleteFoodType(id: string) {
+    setErrorMsg(null)
+    try {
+      await deleteFoodType(id)
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
+  }
+
+  async function handleDeleteTag(id: string) {
+    setErrorMsg(null)
+    try {
+      await deleteTag(id)
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
   }
 
   function startScan() {
@@ -60,15 +103,26 @@ export default function Settings() {
 
   async function saveTag() {
     if (!foodTypeId || !tagIdentifier.trim()) return
-    await addTag(tagIdentifier.trim(), foodTypeId, label.trim())
-    setFoodTypeId('')
-    setLabel('')
-    setTagIdentifier('')
+    setErrorMsg(null)
+    try {
+      await addTag(tagIdentifier.trim(), foodTypeId, label.trim())
+      setFoodTypeId('')
+      setLabel('')
+      setTagIdentifier('')
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
   }
 
   return (
     <div className="py-6 flex flex-col gap-6">
       <h2>Einstellungen</h2>
+
+      {errorMsg && (
+        <p className="text-[13px] text-muted-red bg-input rounded-control px-3 py-2">
+          {errorMsg}
+        </p>
+      )}
 
       {household && (
         <section className="flex flex-col gap-2">
@@ -102,7 +156,7 @@ export default function Settings() {
                     onBlur={(e) => {
                       const value = Number(e.target.value)
                       if (value > 0 && value !== food.default_portion_g) {
-                        updateFoodTypePortion(food.id, value)
+                        handleUpdatePortion(food.id, value)
                       }
                     }}
                     className="w-16 min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border text-text-primary"
@@ -110,7 +164,7 @@ export default function Settings() {
                   <span className="text-[13px] text-text-secondary">g</span>
                   <button
                     type="button"
-                    onClick={() => deleteFoodType(food.id)}
+                    onClick={() => handleDeleteFoodType(food.id)}
                     className="w-11 h-11 flex items-center justify-center text-muted-red"
                     aria-label={`${food.name} entfernen`}
                   >
@@ -180,7 +234,7 @@ export default function Settings() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => deleteTag(tag.id)}
+                    onClick={() => handleDeleteTag(tag.id)}
                     className="w-11 h-11 flex items-center justify-center text-muted-red"
                     aria-label="Tag entfernen"
                   >

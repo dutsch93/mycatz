@@ -4,13 +4,16 @@ import type { HabitDefinition, HabitLog } from '../../types'
 interface Props {
   habit: HabitDefinition
   log: HabitLog | undefined
+  // true, wenn dies eine Gruppe ist und die Katzen für diesen Habit unterschiedliche
+  // Werte haben — dann zeigen wir keinen (willkürlichen) Einzelstatus an.
+  mixed?: boolean
   onLog: (
     value: boolean,
     extra?: { count?: number | null; selectedOption?: string | null; note?: string | null },
   ) => void
 }
 
-export default function HabitItem({ habit, log, onLog }: Props) {
+export default function HabitItem({ habit, log, mixed, onLog }: Props) {
   const [countInputOpen, setCountInputOpen] = useState(false)
   const [countValue, setCountValue] = useState('1')
   const [noteOpen, setNoteOpen] = useState(false)
@@ -35,16 +38,30 @@ export default function HabitItem({ habit, log, onLog }: Props) {
     <div className="border-b-[0.5px] border-border py-3 last:border-b-0">
       <div className="flex items-center gap-2">
         <span className="text-xl">{habit.emoji}</span>
-        <span className="flex-1 text-text-primary">{habit.name}</span>
+        <span className="flex-1 text-text-primary">
+          {habit.name}
+          {mixed && <span className="ml-2 text-[13px] text-text-secondary">(gemischt)</span>}
+        </span>
 
         {habit.type === 'count' && log?.value && (
           <span className="text-[13px] text-text-secondary">{log.count ?? 0}×</span>
         )}
 
+        <button
+          type="button"
+          aria-label="Notiz"
+          onClick={() => setNoteOpen((v) => !v)}
+          className={`w-11 h-11 flex items-center justify-center ${
+            log?.note ? 'text-apricot' : 'text-text-secondary'
+          }`}
+        >
+          📝
+        </button>
+
         {habit.type === 'select' ? (
           <select
             value={log?.selected_option ?? ''}
-            onChange={(e) => onLog(true, { selectedOption: e.target.value })}
+            onChange={(e) => onLog(true, { selectedOption: e.target.value, note: log?.note })}
             className="min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border text-text-primary"
           >
             <option value="" disabled>
@@ -60,19 +77,9 @@ export default function HabitItem({ habit, log, onLog }: Props) {
           <>
             <button
               type="button"
-              aria-label="Notiz"
-              onClick={() => setNoteOpen((v) => !v)}
-              className={`w-11 h-11 flex items-center justify-center ${
-                log?.note ? 'text-apricot' : 'text-text-secondary'
-              }`}
-            >
-              📝
-            </button>
-            <button
-              type="button"
               aria-label={`${habit.name} ja`}
               onClick={() =>
-                habit.type === 'count' ? setCountInputOpen(true) : onLog(true)
+                habit.type === 'count' ? setCountInputOpen(true) : onLog(true, { note: log?.note })
               }
               className={`w-11 h-11 flex items-center justify-center rounded-control ${
                 log?.value === true ? 'bg-sage/20' : ''
@@ -83,7 +90,7 @@ export default function HabitItem({ habit, log, onLog }: Props) {
             <button
               type="button"
               aria-label={`${habit.name} nein`}
-              onClick={() => onLog(false, { count: 0 })}
+              onClick={() => onLog(false, { count: 0, note: log?.note })}
               className={`w-11 h-11 flex items-center justify-center rounded-control ${
                 log?.value === false ? 'bg-muted-red/20' : ''
               }`}
