@@ -121,6 +121,15 @@ export interface WeightLog {
   logged_at: string
 }
 
+export interface NfcTag {
+  id: string
+  household_id: string
+  tag_identifier: string
+  food_type_id: string
+  label: string | null
+  created_at: string
+}
+
 export interface Note {
   id: string
   cat_id: string

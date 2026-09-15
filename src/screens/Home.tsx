@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useAppData } from '../context/AppDataContext'
 import { formatLongDate, todayIso } from '../lib/dates'
+import { isWebNfcSupported, scanNfcTag } from '../lib/nfc'
 import DayStrip from '../components/calendar/DayStrip'
 import FitnessRings from '../components/rings/FitnessRings'
 import HabitList from '../components/habits/HabitList'
@@ -21,10 +23,24 @@ export default function Home() {
     habitLogs,
     notes,
     logHabit,
+    logNfcTag,
     deleteFeedingLog,
     deletePlayLog,
     deleteNote,
   } = useAppData()
+
+  const [scanning, setScanning] = useState(false)
+
+  function handleNfcScan() {
+    setScanning(true)
+    scanNfcTag(
+      (tagId) => {
+        setScanning(false)
+        logNfcTag(tagId)
+      },
+      () => setScanning(false),
+    )
+  }
 
   if (authLoading || loading) {
     return <p className="py-6 text-text-secondary">Lädt…</p>
@@ -81,6 +97,17 @@ export default function Home() {
         playCurrentMin={playCurrentMin}
         playTargetMin={playTargetMin || 1}
       />
+
+      {isWebNfcSupported() && (
+        <button
+          type="button"
+          onClick={handleNfcScan}
+          disabled={scanning}
+          className="w-full min-h-[44px] mt-2 rounded-control border-[0.5px] border-border bg-input text-text-primary disabled:opacity-60"
+        >
+          {scanning ? 'Halte dein Handy an den Tag…' : '📶 NFC-Tag scannen'}
+        </button>
+      )}
 
       {(feedingLogs.length > 0 || playLogs.length > 0 || notes.length > 0) && (
         <div className="flex flex-col gap-2 mt-4 mb-2">

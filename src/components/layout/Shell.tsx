@@ -5,8 +5,16 @@ import FeedingQuickAdd from '../feeding/FeedingQuickAdd'
 import { useAppData } from '../../context/AppDataContext'
 
 export default function Shell({ children }: { children: ReactNode }) {
-  const { foodTypes, quickAddOpen, closeQuickAdd, logFeeding, logPlay, logWeight, logNote } =
-    useAppData()
+  const {
+    foodTypes,
+    quickAddOpen,
+    closeQuickAdd,
+    logFeeding,
+    logPlay,
+    logWeight,
+    logNote,
+    nfcPulse,
+  } = useAppData()
 
   return (
     <div className="min-h-screen bg-page">
@@ -15,6 +23,11 @@ export default function Shell({ children }: { children: ReactNode }) {
         <main className="px-4 pb-24">{children}</main>
       </div>
       <BottomNav />
+      {nfcPulse && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[90%] px-4 py-2 rounded-control bg-apricot text-text-on-color text-[13px] text-center animate-pulse">
+          📶 {nfcPulse}
+        </div>
+      )}
       <FeedingQuickAdd
         open={quickAddOpen}
         onClose={closeQuickAdd}

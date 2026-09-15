@@ -1,14 +1,22 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useHouseholdData } from '../hooks/useHouseholdData'
 import { useDayLogs } from '../hooks/useDayLogs'
+import { useNfcTags } from '../hooks/useNfcTags'
+import { useRealtime } from '../hooks/useRealtime'
 import { todayIso } from '../lib/dates'
+import { NFC_QUERY_PARAM } from '../lib/nfc'
+import type { NfcTag } from '../types'
 
 export type Target = { type: 'cat'; id: string } | { type: 'group'; id: string }
 
 const TARGET_STORAGE_KEY = 'mycatz_selected_target'
 
-interface AppDataValue extends ReturnType<typeof useHouseholdData>, ReturnType<typeof useDayLogs> {
+interface AppDataValue
+  extends ReturnType<typeof useHouseholdData>,
+    ReturnType<typeof useDayLogs>,
+    Pick<ReturnType<typeof useNfcTags>, 'addTag' | 'deleteTag'> {
   userId: string | null
   authLoading: boolean
   target: Target | null
@@ -19,6 +27,9 @@ interface AppDataValue extends ReturnType<typeof useHouseholdData>, ReturnType<t
   quickAddOpen: boolean
   openQuickAdd: () => void
   closeQuickAdd: () => void
+  nfcTags: NfcTag[]
+  nfcPulse: string | null
+  logNfcTag: (tagIdentifier: string) => Promise<void>
 }
 
 const AppDataContext = createContext<AppDataValue | null>(null)
@@ -37,6 +48,36 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   }, [target, householdData.groups])
 
   const dayLogs = useDayLogs(catIdsForTarget, selectedDate, userId)
+  const nfcTagsData = useNfcTags(householdData.household?.id ?? null)
+  const [nfcPulse, setNfcPulse] = useState<string | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useRealtime(catIdsForTarget, dayLogs.refresh)
+
+  async function logNfcTag(tagIdentifier: string) {
+    const tag = nfcTagsData.tags.find((t) => t.tag_identifier === tagIdentifier)
+    if (!tag) {
+      setNfcPulse('Unbekannter NFC-Tag. Bitte in den Einstellungen einrichten.')
+      setTimeout(() => setNfcPulse(null), 2500)
+      return
+    }
+    const foodType = householdData.foodTypes.find((f) => f.id === tag.food_type_id)
+    if (!foodType) return
+    await dayLogs.logFeeding(foodType.id, foodType.default_portion_g)
+    setNfcPulse(`${foodType.name} geloggt (${foodType.default_portion_g}g)`)
+    setTimeout(() => setNfcPulse(null), 2000)
+  }
+
+  // iOS-Shortcut-Fallback: öffnet die App mit ?nfc=TAG_ID statt Web NFC zu nutzen.
+  useEffect(() => {
+    const tagId = searchParams.get(NFC_QUERY_PARAM)
+    if (!tagId || catIdsForTarget.length === 0 || nfcTagsData.tags.length === 0) return
+    logNfcTag(tagId)
+    const next = new URLSearchParams(searchParams)
+    next.delete(NFC_QUERY_PARAM)
+    setSearchParams(next, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, catIdsForTarget.length, nfcTagsData.tags.length])
 
   // Sobald Katzen geladen sind: gespeicherte Auswahl übernehmen oder erste Katze wählen.
   useEffect(() => {
@@ -80,6 +121,11 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         quickAddOpen,
         openQuickAdd: () => setQuickAddOpen(true),
         closeQuickAdd: () => setQuickAddOpen(false),
+        nfcTags: nfcTagsData.tags,
+        addTag: nfcTagsData.addTag,
+        deleteTag: nfcTagsData.deleteTag,
+        nfcPulse,
+        logNfcTag,
       }}
     >
       {children}
