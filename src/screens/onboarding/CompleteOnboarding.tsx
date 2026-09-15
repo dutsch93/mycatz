@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { loadDraft, clearDraft } from '../../lib/onboardingDraft'
@@ -10,12 +10,16 @@ export default function CompleteOnboarding() {
   const navigate = useNavigate()
   const [status, setStatus] = useState<Status>('waiting')
   const [error, setError] = useState<string | null>(null)
+  // Übersteht (anders als eine Variable im Effekt) den doppelten Effekt-Durchlauf,
+  // den React StrictMode im Dev-Modus auslöst, und verhindert so einen doppelten Commit.
+  const hasStartedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
 
     async function run(userId: string) {
-      if (cancelled) return
+      if (cancelled || hasStartedRef.current) return
+      hasStartedRef.current = true
       setStatus('saving')
       const draft = loadDraft()
       if (!draft) {
@@ -30,6 +34,7 @@ export default function CompleteOnboarding() {
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Einrichtung fehlgeschlagen.')
         setStatus('error')
+        hasStartedRef.current = false // erneuter Versuch soll möglich sein
       }
     }
 
