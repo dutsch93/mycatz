@@ -7,7 +7,8 @@ import { useNfcTags } from '../hooks/useNfcTags'
 import { useRealtime } from '../hooks/useRealtime'
 import { todayIso } from '../lib/dates'
 import { NFC_QUERY_PARAM } from '../lib/nfc'
-import type { NfcTag } from '../types'
+import { supabase } from '../lib/supabase'
+import type { FoodCategory, NfcTag } from '../types'
 
 export type Target = { type: 'cat'; id: string } | { type: 'group'; id: string }
 
@@ -30,6 +31,9 @@ interface AppDataValue
   nfcTags: NfcTag[]
   nfcPulse: string | null
   logNfcTag: (tagIdentifier: string) => Promise<void>
+  addFoodType: (name: string, category: FoodCategory, defaultPortionG: number) => Promise<void>
+  updateFoodTypePortion: (id: string, defaultPortionG: number) => Promise<void>
+  deleteFoodType: (id: string) => Promise<void>
 }
 
 const AppDataContext = createContext<AppDataValue | null>(null)
@@ -66,6 +70,35 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     await dayLogs.logFeeding(foodType.id, foodType.default_portion_g)
     setNfcPulse(`${foodType.name} geloggt (${foodType.default_portion_g}g)`)
     setTimeout(() => setNfcPulse(null), 2000)
+  }
+
+  async function addFoodType(name: string, category: FoodCategory, defaultPortionG: number) {
+    const householdId = householdData.household?.id
+    if (!householdId) return
+    const { error } = await supabase.from('food_types').insert({
+      household_id: householdId,
+      name,
+      category,
+      default_portion_g: defaultPortionG,
+      sort_order: householdData.foodTypes.length,
+    })
+    if (error) throw error
+    householdData.refresh()
+  }
+
+  async function updateFoodTypePortion(id: string, defaultPortionG: number) {
+    const { error } = await supabase
+      .from('food_types')
+      .update({ default_portion_g: defaultPortionG })
+      .eq('id', id)
+    if (error) throw error
+    householdData.refresh()
+  }
+
+  async function deleteFoodType(id: string) {
+    const { error } = await supabase.from('food_types').delete().eq('id', id)
+    if (error) throw error
+    householdData.refresh()
   }
 
   // iOS-Shortcut-Fallback: öffnet die App mit ?nfc=TAG_ID statt Web NFC zu nutzen.
@@ -126,6 +159,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         deleteTag: nfcTagsData.deleteTag,
         nfcPulse,
         logNfcTag,
+        addFoodType,
+        updateFoodTypePortion,
+        deleteFoodType,
       }}
     >
       {children}

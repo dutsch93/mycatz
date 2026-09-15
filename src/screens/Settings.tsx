@@ -1,15 +1,47 @@
 import { useState } from 'react'
 import { useAppData } from '../context/AppDataContext'
 import { buildNfcShortcutUrl, isWebNfcSupported, scanNfcTag } from '../lib/nfc'
+import type { FoodCategory } from '../types'
+
+const FOOD_CATEGORY_LABELS: Record<FoodCategory, string> = {
+  wet: 'Nassfutter',
+  dry: 'Trockenfutter',
+  sensitive: 'Sensitiv',
+  cooked: 'Gekocht',
+  snack_dry: 'Snack trocken',
+  snack_wet: 'Snack nass',
+  custom: 'Sonstiges',
+}
 
 export default function Settings() {
-  const { household, foodTypes, nfcTags, addTag, deleteTag } = useAppData()
+  const {
+    household,
+    foodTypes,
+    addFoodType,
+    updateFoodTypePortion,
+    deleteFoodType,
+    nfcTags,
+    addTag,
+    deleteTag,
+  } = useAppData()
+
+  const [foodName, setFoodName] = useState('')
+  const [foodCategory, setFoodCategory] = useState<FoodCategory>('custom')
+  const [foodPortion, setFoodPortion] = useState('')
 
   const [foodTypeId, setFoodTypeId] = useState('')
   const [label, setLabel] = useState('')
   const [tagIdentifier, setTagIdentifier] = useState('')
   const [scanning, setScanning] = useState(false)
   const [scanError, setScanError] = useState<string | null>(null)
+
+  async function saveNewFoodType() {
+    if (!foodName.trim() || !foodPortion) return
+    await addFoodType(foodName.trim(), foodCategory, Number(foodPortion))
+    setFoodName('')
+    setFoodCategory('custom')
+    setFoodPortion('')
+  }
 
   function startScan() {
     setScanError(null)
@@ -44,6 +76,89 @@ export default function Settings() {
           <p className="text-text-primary">{household.name}</p>
         </section>
       )}
+
+      <section className="flex flex-col gap-3">
+        <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
+          Futterarten verwalten
+        </h3>
+
+        {foodTypes.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {foodTypes.map((food) => (
+              <div
+                key={food.id}
+                className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
+              >
+                <div>
+                  <p className="text-text-primary">{food.name}</p>
+                  <p className="text-[13px] text-text-secondary">
+                    {FOOD_CATEGORY_LABELS[food.category]}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    defaultValue={food.default_portion_g}
+                    onBlur={(e) => {
+                      const value = Number(e.target.value)
+                      if (value > 0 && value !== food.default_portion_g) {
+                        updateFoodTypePortion(food.id, value)
+                      }
+                    }}
+                    className="w-16 min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border text-text-primary"
+                  />
+                  <span className="text-[13px] text-text-secondary">g</span>
+                  <button
+                    type="button"
+                    onClick={() => deleteFoodType(food.id)}
+                    className="w-11 h-11 flex items-center justify-center text-muted-red"
+                    aria-label={`${food.name} entfernen`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="bg-card border-[0.5px] border-border rounded-card p-3 flex flex-col gap-3">
+          <p className="text-text-primary">Neue Futterart anlegen</p>
+          <input
+            type="text"
+            value={foodName}
+            onChange={(e) => setFoodName(e.target.value)}
+            placeholder="Name (z. B. Leberwurst)"
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
+          />
+          <select
+            value={foodCategory}
+            onChange={(e) => setFoodCategory(e.target.value as FoodCategory)}
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-text-primary"
+          >
+            {Object.entries(FOOD_CATEGORY_LABELS).map(([value, labelText]) => (
+              <option key={value} value={value}>
+                {labelText}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            value={foodPortion}
+            onChange={(e) => setFoodPortion(e.target.value)}
+            placeholder="Standard-Portion in Gramm"
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
+          />
+          <button
+            type="button"
+            onClick={saveNewFoodType}
+            disabled={!foodName.trim() || !foodPortion}
+            className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+          >
+            Futterart speichern
+          </button>
+        </div>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
