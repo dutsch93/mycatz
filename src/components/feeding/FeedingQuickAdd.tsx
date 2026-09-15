@@ -3,7 +3,7 @@ import BottomSheet from '../shared/BottomSheet'
 import ChipGrid from '../shared/ChipGrid'
 import type { FoodType } from '../../types'
 
-type Mode = 'menu' | 'feeding' | 'play' | 'weight'
+type Mode = 'menu' | 'feeding' | 'play' | 'weight' | 'note'
 
 interface Props {
   open: boolean
@@ -12,6 +12,7 @@ interface Props {
   onLogFeeding: (foodTypeId: string, amountG: number, note?: string) => Promise<void>
   onLogPlay: (durationMin: number, note?: string) => Promise<void>
   onLogWeight: (weightKg: number) => Promise<void>
+  onLogNote: (text: string) => Promise<void>
 }
 
 export default function FeedingQuickAdd({
@@ -21,12 +22,14 @@ export default function FeedingQuickAdd({
   onLogFeeding,
   onLogPlay,
   onLogWeight,
+  onLogNote,
 }: Props) {
   const [mode, setMode] = useState<Mode>('menu')
   const [foodTypeId, setFoodTypeId] = useState<string | null>(null)
   const [amountG, setAmountG] = useState('')
   const [playMin, setPlayMin] = useState('')
   const [weightKg, setWeightKg] = useState('')
+  const [noteText, setNoteText] = useState('')
   const [saving, setSaving] = useState(false)
 
   function reset() {
@@ -35,6 +38,7 @@ export default function FeedingQuickAdd({
     setAmountG('')
     setPlayMin('')
     setWeightKg('')
+    setNoteText('')
   }
 
   function handleClose() {
@@ -81,6 +85,17 @@ export default function FeedingQuickAdd({
     }
   }
 
+  async function saveNote() {
+    if (!noteText.trim()) return
+    setSaving(true)
+    try {
+      await onLogNote(noteText.trim())
+      handleClose()
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <BottomSheet open={open} onClose={handleClose}>
       {mode === 'menu' && (
@@ -106,6 +121,13 @@ export default function FeedingQuickAdd({
             className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left"
           >
             ⚖️ Gewicht
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('note')}
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left"
+          >
+            📝 Notiz
           </button>
           <button
             type="button"
@@ -181,6 +203,27 @@ export default function FeedingQuickAdd({
             type="button"
             disabled={!weightKg || saving}
             onClick={saveWeight}
+            className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+          >
+            Speichern
+          </button>
+        </div>
+      )}
+      {mode === 'note' && (
+        <div className="flex flex-col gap-3">
+          <h3>Notiz</h3>
+          <textarea
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Freitext für die Katze/Gruppe"
+            rows={4}
+            className="px-3 py-2 rounded-control bg-input border-[0.5px] border-border"
+            autoFocus
+          />
+          <button
+            type="button"
+            disabled={!noteText.trim() || saving}
+            onClick={saveNote}
             className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
           >
             Speichern

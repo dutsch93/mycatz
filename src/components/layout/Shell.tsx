@@ -5,7 +5,8 @@ import FeedingQuickAdd from '../feeding/FeedingQuickAdd'
 import { useAppData } from '../../context/AppDataContext'
 
 export default function Shell({ children }: { children: ReactNode }) {
-  const { foodTypes, quickAddOpen, closeQuickAdd, logFeeding, logPlay, logWeight } = useAppData()
+  const { foodTypes, quickAddOpen, closeQuickAdd, logFeeding, logPlay, logWeight, logNote } =
+    useAppData()
 
   return (
     <div className="min-h-screen bg-page">
@@ -21,6 +22,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         onLogFeeding={logFeeding}
         onLogPlay={logPlay}
         onLogWeight={logWeight}
+        onLogNote={logNote}
       />
     </div>
   )

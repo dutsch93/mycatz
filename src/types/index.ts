@@ -120,3 +120,12 @@ export interface WeightLog {
   logged_by: string | null
   logged_at: string
 }
+
+export interface Note {
+  id: string
+  cat_id: string
+  text: string
+  logged_by: string | null
+  logged_at: string
+  date: string
+}

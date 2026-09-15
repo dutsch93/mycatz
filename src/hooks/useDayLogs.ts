@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import type { FeedingLog, HabitLog, PlayLog } from '../types'
+import type { FeedingLog, HabitLog, Note, PlayLog } from '../types'
 
 // Lädt und schreibt die Logs für eine Menge von Katzen-IDs (eine Katze oder alle Mitglieder
 // einer Gruppe) an einem bestimmten Tag. Bei Gruppen wird laut CLAUDE.md pro Katze ein
@@ -10,6 +10,7 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
   const [feedingLogs, setFeedingLogs] = useState<FeedingLog[]>([])
   const [playLogs, setPlayLogs] = useState<PlayLog[]>([])
   const [habitLogs, setHabitLogs] = useState<HabitLog[]>([])
+  const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(false)
   const [reloadCount, setReloadCount] = useState(0)
 
@@ -22,21 +23,24 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
       setFeedingLogs([])
       setPlayLogs([])
       setHabitLogs([])
+      setNotes([])
       return
     }
     let cancelled = false
 
     async function load() {
       setLoading(true)
-      const [feedRes, playRes, habitRes] = await Promise.all([
+      const [feedRes, playRes, habitRes, notesRes] = await Promise.all([
         supabase.from('feeding_logs').select('*').in('cat_id', catIds).eq('date', date),
         supabase.from('play_logs').select('*').in('cat_id', catIds).eq('date', date),
         supabase.from('habit_logs').select('*').in('cat_id', catIds).eq('date', date),
+        supabase.from('notes').select('*').in('cat_id', catIds).eq('date', date),
       ])
       if (cancelled) return
       setFeedingLogs((feedRes.data as FeedingLog[]) ?? [])
       setPlayLogs((playRes.data as PlayLog[]) ?? [])
       setHabitLogs((habitRes.data as HabitLog[]) ?? [])
+      setNotes((notesRes.data as Note[]) ?? [])
       setLoading(false)
     }
 
@@ -111,6 +115,24 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
     refresh()
   }
 
+  async function logNote(text: string) {
+    const rows = catIds.map((catId) => ({
+      cat_id: catId,
+      text,
+      date,
+      logged_by: userId,
+    }))
+    const { error } = await supabase.from('notes').insert(rows)
+    if (error) throw error
+    refresh()
+  }
+
+  async function deleteNote(id: string) {
+    const { error } = await supabase.from('notes').delete().eq('id', id)
+    if (error) throw error
+    refresh()
+  }
+
   async function deleteFeedingLog(id: string) {
     const { error } = await supabase.from('feeding_logs').delete().eq('id', id)
     if (error) throw error
@@ -127,13 +149,16 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
     feedingLogs,
     playLogs,
     habitLogs,
+    notes,
     loading,
     refresh,
     logFeeding,
     logPlay,
     logWeight,
     logHabit,
+    logNote,
     deleteFeedingLog,
     deletePlayLog,
+    deleteNote,
   }
 }

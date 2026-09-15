@@ -19,9 +19,11 @@ export default function Home() {
     feedingLogs,
     playLogs,
     habitLogs,
+    notes,
     logHabit,
     deleteFeedingLog,
     deletePlayLog,
+    deleteNote,
   } = useAppData()
 
   if (authLoading || loading) {
@@ -80,7 +82,7 @@ export default function Home() {
         playTargetMin={playTargetMin || 1}
       />
 
-      {(feedingLogs.length > 0 || playLogs.length > 0) && (
+      {(feedingLogs.length > 0 || playLogs.length > 0 || notes.length > 0) && (
         <div className="flex flex-col gap-2 mt-4 mb-2">
           {feedingLogs.map((log) => (
             <div
@@ -109,6 +111,22 @@ export default function Home() {
                 onClick={() => deletePlayLog(log.id)}
                 className="w-11 h-11 flex items-center justify-center text-muted-red"
                 aria-label="Eintrag löschen"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          {notes.map((note) => (
+            <div
+              key={note.id}
+              className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
+            >
+              <span className="text-[13px] text-text-secondary">📝 {note.text}</span>
+              <button
+                type="button"
+                onClick={() => deleteNote(note.id)}
+                className="w-11 h-11 flex items-center justify-center text-muted-red"
+                aria-label="Notiz löschen"
               >
                 ✕
               </button>
