@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 import { formatLongDate, todayIso } from '../lib/dates'
 import { isWebNfcSupported, scanNfcTag } from '../lib/nfc'
@@ -48,8 +49,11 @@ export default function Home() {
 
   if (!userId) {
     return (
-      <div className="py-6 text-center">
+      <div className="py-6 text-center flex flex-col gap-3">
         <p className="text-text-secondary">Bitte meldet euch an, um MyCatz zu nutzen.</p>
+        <Link to="/login" className="text-apricot underline">
+          Zum Login
+        </Link>
       </div>
     )
   }

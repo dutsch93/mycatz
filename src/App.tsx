@@ -7,12 +7,14 @@ import Settings from './screens/Settings'
 import OnboardingWizard from './screens/onboarding/OnboardingWizard'
 import CheckEmail from './screens/onboarding/CheckEmail'
 import CompleteOnboarding from './screens/onboarding/CompleteOnboarding'
+import Login from './screens/Login'
 import { AppDataProvider } from './context/AppDataContext'
 
 export default function App() {
   return (
     <AppDataProvider>
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/onboarding" element={<OnboardingWizard />} />
         <Route path="/onboarding/check-email" element={<CheckEmail />} />
         <Route path="/onboarding/complete" element={<CompleteOnboarding />} />
