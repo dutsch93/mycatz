@@ -28,7 +28,7 @@ export default function GuestAccept() {
         p_token: token,
         p_display_name: displayName.trim(),
       })
-      if (rpcError) throw rpcError
+      if (rpcError) throw new Error(rpcError.message)
 
       navigate('/', { replace: true })
     } catch (err) {

@@ -62,7 +62,7 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
       note: note || null,
     }))
     const { error } = await supabase.from('feeding_logs').insert(rows)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
@@ -75,7 +75,7 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
       note: note || null,
     }))
     const { error } = await supabase.from('play_logs').insert(rows)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
@@ -87,7 +87,7 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
       logged_by: userId,
     }))
     const { error } = await supabase.from('weight_logs').insert(rows)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
@@ -111,7 +111,7 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
     const { error } = await supabase
       .from('habit_logs')
       .upsert(rows, { onConflict: 'cat_id,habit_id,date' })
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
@@ -123,25 +123,25 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
       logged_by: userId,
     }))
     const { error } = await supabase.from('notes').insert(rows)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
   async function deleteNote(id: string) {
     const { error } = await supabase.from('notes').delete().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
   async function deleteFeedingLog(id: string) {
     const { error } = await supabase.from('feeding_logs').delete().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
   async function deletePlayLog(id: string) {
     const { error } = await supabase.from('play_logs').delete().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 

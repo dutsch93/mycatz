@@ -38,13 +38,13 @@ export function useNfcTags(householdId: string | null) {
       food_type_id: foodTypeId,
       label: label || null,
     })
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
   async function deleteTag(id: string) {
     const { error } = await supabase.from('nfc_tags').delete().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 

@@ -64,13 +64,13 @@ export function useMembership(householdId: string | null, isOwner: boolean) {
   async function createInvite(email: string) {
     if (!householdId) return
     const { error } = await supabase.from('invites').insert({ household_id: householdId, email })
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
   async function cancelInvite(id: string) {
     const { error } = await supabase.from('invites').delete().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
@@ -79,7 +79,7 @@ export function useMembership(householdId: string | null, isOwner: boolean) {
     const { error } = await supabase
       .from('guest_links')
       .insert({ household_id: householdId, label: label || null })
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 
@@ -88,7 +88,7 @@ export function useMembership(householdId: string | null, isOwner: boolean) {
       .from('guest_links')
       .update({ revoked_at: new Date().toISOString() })
       .eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     refresh()
   }
 

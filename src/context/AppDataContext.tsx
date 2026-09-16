@@ -98,7 +98,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       default_portion_g: defaultPortionG,
       sort_order: householdData.foodTypes.length,
     })
-    if (error) throw error
+    if (error) throw new Error(error.message)
     householdData.refresh()
   }
 
@@ -107,13 +107,13 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       .from('food_types')
       .update({ default_portion_g: defaultPortionG })
       .eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     householdData.refresh()
   }
 
   async function deleteFoodType(id: string) {
     const { error } = await supabase.from('food_types').delete().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
     householdData.refresh()
   }
 

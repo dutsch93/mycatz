@@ -35,11 +35,19 @@ export default function InviteAccept() {
           p_token: token,
           p_display_name: draft?.displayName ?? '',
         })
-        if (rpcError) throw rpcError
+        if (rpcError) throw new Error(rpcError.message)
         localStorage.removeItem(DRAFT_KEY)
         navigate('/', { replace: true })
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Einladung konnte nicht eingelöst werden.')
+        const message = err instanceof Error ? err.message : 'Einladung konnte nicht eingelöst werden.'
+        // Wenn der Link doppelt aufgerufen wurde (z. B. E-Mail-Client-Vorschau + eigener Klick),
+        // existiert das Profil beim zweiten Versuch schon — dann sind wir trotzdem eingeloggt.
+        if (message.includes('existiert bereits ein Profil')) {
+          localStorage.removeItem(DRAFT_KEY)
+          navigate('/', { replace: true })
+          return
+        }
+        setError(message)
         setStatus('error')
         hasStartedRef.current = false
       }
