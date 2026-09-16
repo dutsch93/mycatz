@@ -4,6 +4,7 @@ import { useAppData } from '../context/AppDataContext'
 import { formatLongDate, todayIso } from '../lib/dates'
 import { isWebNfcSupported, scanNfcTag } from '../lib/nfc'
 import DayStrip from '../components/calendar/DayStrip'
+import MonthOverlay from '../components/calendar/MonthOverlay'
 import FitnessRings from '../components/rings/FitnessRings'
 import HabitList from '../components/habits/HabitList'
 
@@ -32,6 +33,7 @@ export default function Home() {
   } = useAppData()
 
   const [scanning, setScanning] = useState(false)
+  const [monthOpen, setMonthOpen] = useState(false)
 
   function handleNfcScan() {
     setScanning(true)
@@ -82,7 +84,29 @@ export default function Home() {
 
   return (
     <div className="pb-6">
-      <DayStrip selectedDate={selectedDate} onSelect={setSelectedDate} />
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <DayStrip selectedDate={selectedDate} onSelect={setSelectedDate} />
+        </div>
+        <button
+          type="button"
+          onClick={() => setMonthOpen(true)}
+          className="w-11 h-11 flex items-center justify-center text-text-secondary text-xl"
+          aria-label="Monatskalender öffnen"
+        >
+          📅
+        </button>
+      </div>
+
+      {monthOpen && (
+        <MonthOverlay
+          initialDate={selectedDate}
+          catIds={catIdsForTarget}
+          foodTargetG={foodTargetG}
+          onSelect={setSelectedDate}
+          onClose={() => setMonthOpen(false)}
+        />
+      )}
 
       {!isToday && (
         <div className="flex items-center justify-between bg-input rounded-control px-3 py-2 mb-3">
