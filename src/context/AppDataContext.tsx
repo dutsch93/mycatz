@@ -5,6 +5,7 @@ import { useHouseholdData } from '../hooks/useHouseholdData'
 import { useDayLogs } from '../hooks/useDayLogs'
 import { useNfcTags } from '../hooks/useNfcTags'
 import { useRealtime } from '../hooks/useRealtime'
+import { useMembership } from '../hooks/useMembership'
 import { todayIso } from '../lib/dates'
 import { NFC_QUERY_PARAM } from '../lib/nfc'
 import { supabase } from '../lib/supabase'
@@ -17,8 +18,10 @@ const TARGET_STORAGE_KEY = 'mycatz_selected_target'
 interface AppDataValue
   extends Omit<ReturnType<typeof useHouseholdData>, 'loading' | 'refresh'>,
     Omit<ReturnType<typeof useDayLogs>, 'loading' | 'refresh'>,
-    Pick<ReturnType<typeof useNfcTags>, 'addTag' | 'deleteTag'> {
+    Pick<ReturnType<typeof useNfcTags>, 'addTag' | 'deleteTag'>,
+    ReturnType<typeof useMembership> {
   userId: string | null
+  isOwner: boolean
   authLoading: boolean
   // "loading"/"refresh" beziehen sich auf die Haushaltsdaten (Katzen, Futterarten, Habits) —
   // die gleichnamigen Felder aus useDayLogs sind unten explizit umbenannt, damit sie sich beim
@@ -64,6 +67,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     userId,
   )
   const nfcTagsData = useNfcTags(householdData.household?.id ?? null)
+  const isOwner = householdData.profile?.role === 'owner'
+  const membership = useMembership(householdData.household?.id ?? null, isOwner)
   const [nfcPulse, setNfcPulse] = useState<string | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -155,7 +160,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       value={{
         userId,
         authLoading,
+        isOwner,
         ...householdData,
+        ...membership,
         ...dayLogs,
         dayLogsLoading,
         refreshDayLogs,

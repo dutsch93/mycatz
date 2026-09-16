@@ -12,6 +12,7 @@ export default function Home() {
     authLoading,
     userId,
     loading,
+    profile,
     cats,
     groups,
     habits,
@@ -77,6 +78,7 @@ export default function Home() {
   const playCurrentMin = playLogs.reduce((sum, l) => sum + l.duration_min, 0)
 
   const isToday = selectedDate === todayIso()
+  const canEdit = profile?.role !== 'guest'
 
   return (
     <div className="pb-6">
@@ -121,14 +123,16 @@ export default function Home() {
               className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
             >
               <span className="text-[13px] text-text-secondary">🍽️ {log.amount_g}g</span>
-              <button
-                type="button"
-                onClick={() => deleteFeedingLog(log.id)}
-                className="w-11 h-11 flex items-center justify-center text-muted-red"
-                aria-label="Eintrag löschen"
-              >
-                ✕
-              </button>
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => deleteFeedingLog(log.id)}
+                  className="w-11 h-11 flex items-center justify-center text-muted-red"
+                  aria-label="Eintrag löschen"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           ))}
           {playLogs.map((log) => (
@@ -137,14 +141,16 @@ export default function Home() {
               className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
             >
               <span className="text-[13px] text-text-secondary">🎾 {log.duration_min} min</span>
-              <button
-                type="button"
-                onClick={() => deletePlayLog(log.id)}
-                className="w-11 h-11 flex items-center justify-center text-muted-red"
-                aria-label="Eintrag löschen"
-              >
-                ✕
-              </button>
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => deletePlayLog(log.id)}
+                  className="w-11 h-11 flex items-center justify-center text-muted-red"
+                  aria-label="Eintrag löschen"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           ))}
           {notes.map((note) => (
@@ -153,14 +159,16 @@ export default function Home() {
               className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
             >
               <span className="text-[13px] text-text-secondary">📝 {note.text}</span>
-              <button
-                type="button"
-                onClick={() => deleteNote(note.id)}
-                className="w-11 h-11 flex items-center justify-center text-muted-red"
-                aria-label="Notiz löschen"
-              >
-                ✕
-              </button>
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => deleteNote(note.id)}
+                  className="w-11 h-11 flex items-center justify-center text-muted-red"
+                  aria-label="Notiz löschen"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -8,6 +8,8 @@ import OnboardingWizard from './screens/onboarding/OnboardingWizard'
 import CheckEmail from './screens/onboarding/CheckEmail'
 import CompleteOnboarding from './screens/onboarding/CompleteOnboarding'
 import Login from './screens/Login'
+import InviteAccept from './screens/InviteAccept'
+import GuestAccept from './screens/GuestAccept'
 import { AppDataProvider } from './context/AppDataContext'
 
 export default function App() {
@@ -15,6 +17,8 @@ export default function App() {
     <AppDataProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/invite/:token" element={<InviteAccept />} />
+        <Route path="/guest/:token" element={<GuestAccept />} />
         <Route path="/onboarding" element={<OnboardingWizard />} />
         <Route path="/onboarding/check-email" element={<CheckEmail />} />
         <Route path="/onboarding/complete" element={<CompleteOnboarding />} />
