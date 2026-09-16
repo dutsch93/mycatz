@@ -40,3 +40,17 @@ export function formatLongDate(iso: string): string {
 export function lastDays(centerIso: string, count: number): string[] {
   return Array.from({ length: count }, (_, i) => addDays(centerIso, i - (count - 1)))
 }
+
+// Die letzten `count` Monate bis einschließlich dem aktuellen, als "YYYY-MM", älteste zuerst.
+export function lastMonths(count: number): string[] {
+  const now = new Date()
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (count - 1 - i), 1)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  })
+}
+
+export function monthShortLabel(monthKey: string): string {
+  const [y, m] = monthKey.split('-').map(Number)
+  return new Date(y, m - 1, 1).toLocaleDateString('de-DE', { month: 'short' })
+}
