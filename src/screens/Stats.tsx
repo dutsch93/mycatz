@@ -12,8 +12,8 @@ import {
 } from 'recharts'
 import { useAppData } from '../context/AppDataContext'
 import { useStats, type StatsRange } from '../hooks/useStats'
-import { addDays, dayNumber, lastDays, lastMonths, monthShortLabel, todayIso, weekdayShort } from '../lib/dates'
-import type { HabitDefinition, HabitLog } from '../types'
+import { dayNumber, lastDays, lastMonths, monthShortLabel, todayIso, weekdayShort } from '../lib/dates'
+import { computeStreak, healthEventLabel } from '../lib/streaks'
 
 const RANGE_LABELS: Record<StatsRange, string> = { week: 'Woche', month: 'Monat', year: 'Jahr' }
 
@@ -32,33 +32,6 @@ function buildDailyChartData(
 function buildMonthlyChartData(sumForMonth: (monthKey: string) => number) {
   const months = lastMonths(12)
   return months.map((key) => ({ label: monthShortLabel(key), value: sumForMonth(key) }))
-}
-
-function computeStreak(habitId: string, logs: HabitLog[]): number {
-  let streak = 0
-  let cursor = todayIso()
-  let first = true
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const dayLogs = logs.filter((l) => l.habit_id === habitId && l.date === cursor)
-    const hit = dayLogs.some((l) => l.value === true)
-    if (hit) {
-      streak++
-    } else if (first && dayLogs.length === 0) {
-      // heute evtl. noch nicht geloggt — Streak deswegen nicht abbrechen
-    } else {
-      break
-    }
-    first = false
-    cursor = addDays(cursor, -1)
-  }
-  return streak
-}
-
-function healthEventLabel(habit: HabitDefinition, log: HabitLog): string {
-  if (habit.type === 'count' && log.count) return `${log.count}× ${habit.name}`
-  if (habit.type === 'select' && log.selected_option) return `${habit.name}: ${log.selected_option}`
-  return habit.name
 }
 
 export default function Stats() {
