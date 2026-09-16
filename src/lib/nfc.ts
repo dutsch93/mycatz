@@ -20,8 +20,14 @@ export function scanNfcTag(onTag: (tagIdentifier: string) => void, onError: (mes
     return () => {}
   }
 
-  // NDEFReader ist nicht in allen TS-Lib-Definitionen enthalten, daher hier als any.
-  const NDEFReaderCtor = (window as unknown as { NDEFReader: new () => any }).NDEFReader
+  // NDEFReader ist nicht in allen TS-Lib-Definitionen enthalten, daher hier minimal nachgebaut.
+  interface NDEFReaderInstance {
+    scan: () => Promise<void>
+    onreading: ((event: { serialNumber: string }) => void) | null
+    onreadingerror: (() => void) | null
+  }
+  const NDEFReaderCtor = (window as unknown as { NDEFReader: new () => NDEFReaderInstance })
+    .NDEFReader
   const reader = new NDEFReaderCtor()
   let cancelled = false
 

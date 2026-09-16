@@ -1,5 +1,7 @@
 # CLAUDE.md — MyCatz
 
+> Vor jeder Code-Änderung [CONSTRAINTS.md](./CONSTRAINTS.md) lesen. Nicht aufweichen, nur um eine Änderung durchzubekommen.
+
 ## Projektübersicht
 
 **MyCatz** ist eine Mobile-first Progressive Web App (PWA) zum täglichen Tracking von Katzen-Gewohnheiten. Hauptfokus: Fütterung (inkl. NFC-Logging), Spielzeit, Gesundheit und Verhalten. Mehrere Katzen, mehrere Nutzer (inkl. Gäste), gruppierbar.
