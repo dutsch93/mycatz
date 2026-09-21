@@ -25,6 +25,9 @@ coverage
 # Claude Code local settings
 .claude/
 
+# Brainstorming-Mockups (Superpowers visual companion)
+.superpowers/
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
