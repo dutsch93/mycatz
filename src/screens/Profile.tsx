@@ -1,4 +1,6 @@
+import { Check, Users } from 'lucide-react'
 import { useAppData } from '../context/AppDataContext'
+import GlassCard from '../components/shared/GlassCard'
 
 export default function Profile() {
   const { cats, groups, target, setTarget } = useAppData()
@@ -14,34 +16,45 @@ export default function Profile() {
         {cats.map((cat) => {
           const isSelected = target?.type === 'cat' && target.id === cat.id
           return (
-            <button
+            <GlassCard
               key={cat.id}
-              type="button"
-              onClick={() => setTarget({ type: 'cat', id: cat.id })}
-              className={`flex items-center justify-between min-h-[44px] px-3 rounded-card border-[0.5px] ${
-                isSelected ? 'border-apricot bg-input' : 'border-border bg-card'
+              className={`flex items-center justify-between min-h-[44px] px-3 ${
+                isSelected ? 'bg-input' : ''
               }`}
             >
-              <span>{cat.name}</span>
-              {isSelected && <span className="text-apricot">✓</span>}
-            </button>
+              <button
+                type="button"
+                onClick={() => setTarget({ type: 'cat', id: cat.id })}
+                className="flex-1 flex items-center justify-between min-h-[44px]"
+              >
+                <span>{cat.name}</span>
+                {isSelected && <Check size={18} className="text-apricot" />}
+              </button>
+            </GlassCard>
           )
         })}
 
         {groups.map((group) => {
           const isSelected = target?.type === 'group' && target.id === group.id
           return (
-            <button
+            <GlassCard
               key={group.id}
-              type="button"
-              onClick={() => setTarget({ type: 'group', id: group.id })}
-              className={`flex items-center justify-between min-h-[44px] px-3 rounded-card border-[0.5px] ${
-                isSelected ? 'border-apricot bg-input' : 'border-border bg-card'
+              className={`flex items-center justify-between min-h-[44px] px-3 ${
+                isSelected ? 'bg-input' : ''
               }`}
             >
-              <span>👥 {group.name}</span>
-              {isSelected && <span className="text-apricot">✓</span>}
-            </button>
+              <button
+                type="button"
+                onClick={() => setTarget({ type: 'group', id: group.id })}
+                className="flex-1 flex items-center gap-2 justify-between min-h-[44px]"
+              >
+                <span className="flex items-center gap-2">
+                  <Users size={16} strokeWidth={1.75} />
+                  {group.name}
+                </span>
+                {isSelected && <Check size={18} className="text-apricot" />}
+              </button>
+            </GlassCard>
           )
         })}
       </div>

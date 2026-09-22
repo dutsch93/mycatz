@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { X, Nfc } from 'lucide-react'
 import { useAppData } from '../context/AppDataContext'
 import { buildNfcShortcutUrl, isWebNfcSupported, scanNfcTag } from '../lib/nfc'
 import { supabase } from '../lib/supabase'
@@ -195,7 +196,7 @@ export default function Settings() {
             {foodTypes.map((food) => (
               <div
                 key={food.id}
-                className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
+                className="glass flex items-center justify-between px-3 py-2"
               >
                 <div>
                   <p className="text-text-primary">{food.name}</p>
@@ -224,7 +225,7 @@ export default function Settings() {
                         className="w-11 h-11 flex items-center justify-center text-muted-red"
                         aria-label={`${food.name} entfernen`}
                       >
-                        ✕
+                        <X size={16} />
                       </button>
                     </>
                   ) : (
@@ -239,7 +240,7 @@ export default function Settings() {
         )}
 
         {isOwner && (
-          <div className="bg-card border-[0.5px] border-border rounded-card p-3 flex flex-col gap-3">
+          <div className="glass p-3 flex flex-col gap-3">
             <p className="text-text-primary">Neue Futterart anlegen</p>
             <input
               type="text"
@@ -290,7 +291,7 @@ export default function Settings() {
               return (
                 <div
                   key={tag.id}
-                  className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
+                  className="glass flex items-center justify-between px-3 py-2"
                 >
                   <div>
                     <p className="text-text-primary">{tag.label || tag.tag_identifier}</p>
@@ -303,7 +304,7 @@ export default function Settings() {
                       className="w-11 h-11 flex items-center justify-center text-muted-red"
                       aria-label="Tag entfernen"
                     >
-                      ✕
+                      <X size={16} />
                     </button>
                   )}
                 </div>
@@ -314,7 +315,7 @@ export default function Settings() {
 
         {isOwner && (
           <>
-            <div className="bg-card border-[0.5px] border-border rounded-card p-3 flex flex-col gap-3">
+            <div className="glass p-3 flex flex-col gap-3">
               <p className="text-text-primary">Neuen NFC-Tag einrichten</p>
 
               <select
@@ -335,9 +336,10 @@ export default function Settings() {
                   type="button"
                   onClick={startScan}
                   disabled={scanning}
-                  className="min-h-[44px] rounded-control border-[0.5px] border-border bg-input text-text-primary disabled:opacity-60"
+                  className="min-h-[44px] rounded-control border-[0.5px] border-border bg-input text-text-primary disabled:opacity-60 flex items-center justify-center gap-2"
                 >
-                  {scanning ? 'Halte dein Handy jetzt an den Tag…' : '📶 Tag scannen'}
+                  <Nfc size={18} strokeWidth={1.75} />
+                  {scanning ? 'Halte dein Handy jetzt an den Tag…' : 'Tag scannen'}
                 </button>
               ) : (
                 <input
@@ -372,7 +374,7 @@ export default function Settings() {
               </button>
             </div>
 
-            <div className="bg-input rounded-card p-3">
+            <div className="glass p-3">
               <p className="text-[13px] text-text-secondary">
                 <strong>iOS-Fallback:</strong> iPhones unterstützen kein Web NFC. Öffne die
                 Kurzbefehle-App und erstelle eine NFC-Automation, die diese URL öffnet:
@@ -400,7 +402,7 @@ export default function Settings() {
                 return (
                   <div
                     key={invite.id}
-                    className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
+                    className="glass flex items-center justify-between px-3 py-2"
                   >
                     <div>
                       <p className="text-text-primary">{invite.email}</p>
@@ -413,7 +415,7 @@ export default function Settings() {
                         className="w-11 h-11 flex items-center justify-center text-muted-red"
                         aria-label="Einladung zurückziehen"
                       >
-                        ✕
+                        <X size={16} />
                       </button>
                     )}
                   </div>
@@ -422,7 +424,7 @@ export default function Settings() {
             </div>
           )}
 
-          <div className="bg-card border-[0.5px] border-border rounded-card p-3 flex flex-col gap-3">
+          <div className="glass p-3 flex flex-col gap-3">
             <p className="text-text-primary">Neue Einladung senden</p>
             <input
               type="email"
@@ -440,7 +442,7 @@ export default function Settings() {
               Einladung erstellen
             </button>
             {invites.length > 0 && !invites[0].used_at && (
-              <div className="bg-input rounded-control p-3">
+              <div className="glass rounded-control p-3">
                 <p className="text-[13px] text-text-secondary">
                   Link zum Teilen (z. B. per Nachricht schicken):
                 </p>
@@ -478,7 +480,7 @@ export default function Settings() {
                 return (
                   <div
                     key={link.id}
-                    className="flex flex-col gap-2 bg-card border-[0.5px] border-border rounded-card px-3 py-2"
+                    className="glass flex flex-col gap-2 px-3 py-2"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -498,7 +500,7 @@ export default function Settings() {
                           className="w-11 h-11 flex items-center justify-center text-muted-red"
                           aria-label="Gast-Link widerrufen"
                         >
-                          ✕
+                          <X size={16} />
                         </button>
                       )}
                     </div>
@@ -524,7 +526,7 @@ export default function Settings() {
             </div>
           )}
 
-          <div className="bg-card border-[0.5px] border-border rounded-card p-3 flex flex-col gap-3">
+          <div className="glass p-3 flex flex-col gap-3">
             <input
               type="text"
               value={guestLinkLabel}

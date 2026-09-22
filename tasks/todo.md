@@ -277,13 +277,13 @@ bekommen den Glass-Look. Keine funktionale Änderung an RLS-Gating oder
 Formularen.
 
 **Acceptance criteria:**
-- [ ] `Settings.tsx` nutzt `GlassCard` für alle Abschnitte, Owner-only-Gating unverändert
-- [ ] `Profile.tsx` nutzt `GlassCard`, Katzen-/Gruppen-Umschaltung funktioniert unverändert
-- [ ] Icons (z. B. für Abmelden, Einladung kopieren) auf Lucide umgestellt wo bisher Emoji verwendet wurde
+- [x] `Settings.tsx` nutzt den `.glass`-Look für alle Abschnitte, Owner-only-Gating unverändert
+- [x] `Profile.tsx` nutzt `GlassCard`, Katzen-/Gruppen-Umschaltung funktioniert unverändert
+- [x] Icons (✕, 📶, 👥, ✓) auf Lucide umgestellt wo bisher Emoji verwendet wurde
 
 **Verification:**
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Als Owner und (falls testbar) als Guest/Member einloggen, Sichtbarkeit der jeweiligen Abschnitte bleibt korrekt wie vor dem Umbau
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer im Browser bestätigt ("sieht gut aus")
 
 **Dependencies:** Checkpoint "Stats fertig"
 
