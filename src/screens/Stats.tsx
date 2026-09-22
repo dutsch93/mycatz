@@ -14,6 +14,10 @@ import { useAppData } from '../context/AppDataContext'
 import { useStats, type StatsRange } from '../hooks/useStats'
 import { dayNumber, lastDays, lastMonths, monthShortLabel, todayIso, weekdayShort } from '../lib/dates'
 import { computeStreak, healthEventLabel } from '../lib/streaks'
+import { computeWeeklyPlayInsight } from '../lib/insights'
+import { resolveHabitIcon } from '../lib/habitIcons'
+import GlassCard from '../components/shared/GlassCard'
+import HealthHeatmap from '../components/shared/HealthHeatmap'
 
 const RANGE_LABELS: Record<StatsRange, string> = { week: 'Woche', month: 'Monat', year: 'Jahr' }
 
@@ -106,6 +110,11 @@ export default function Stats() {
       }))
   }, [weightLogs])
 
+  const playInsightPercent = useMemo(
+    () => computeWeeklyPlayInsight(playLogs, todayIso()),
+    [playLogs],
+  )
+
   const healthEvents = useMemo(
     () =>
       habitLogs
@@ -132,14 +141,14 @@ export default function Stats() {
     <div className="py-6 flex flex-col gap-6 pb-10">
       <h2>Statistik</h2>
 
-      <div className="flex gap-2">
+      <div className="glass flex gap-1 p-1 w-fit">
         {(Object.keys(RANGE_LABELS) as StatsRange[]).map((r) => (
           <button
             key={r}
             type="button"
             onClick={() => setRange(r)}
-            className={`min-h-[36px] px-4 rounded-control text-[13px] ${
-              range === r ? 'bg-apricot text-text-on-color' : 'bg-input text-text-secondary'
+            className={`min-h-[36px] px-4 rounded-2xl text-[13px] ${
+              range === r ? 'bg-apricot text-text-on-color' : 'text-text-secondary'
             }`}
           >
             {RANGE_LABELS[r]}
@@ -149,9 +158,22 @@ export default function Stats() {
 
       {loading && <p className="text-[13px] text-text-secondary">Lädt…</p>}
 
+      {playInsightPercent !== null && (
+        <GlassCard className="p-3">
+          <p className="text-text-primary">
+            Spielzeit ist um{' '}
+            <span className={playInsightPercent >= 0 ? 'text-sage' : 'text-muted-red'}>
+              {playInsightPercent >= 0 ? '+' : ''}
+              {playInsightPercent}%
+            </span>{' '}
+            {playInsightPercent >= 0 ? 'gestiegen' : 'gesunken'} gegenüber letzter Woche.
+          </p>
+        </GlassCard>
+      )}
+
       <section className="flex flex-col gap-2">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">Futter</h3>
-        <div className="bg-card border-[0.5px] border-border rounded-card p-3" style={{ height: 160 }}>
+        <GlassCard className="p-3" style={{ height: 160 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={foodChartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
@@ -161,7 +183,7 @@ export default function Stats() {
               <Bar dataKey="value" fill="var(--color-sage)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </GlassCard>
         <p className="text-[13px] text-text-secondary">
           Ø {Math.round(avgFoodG)}g / Tag {foodTargetG > 0 && <>· Ziel: {foodTargetG}g</>}
         </p>
@@ -169,7 +191,7 @@ export default function Stats() {
 
       <section className="flex flex-col gap-2">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">Spielzeit</h3>
-        <div className="bg-card border-[0.5px] border-border rounded-card p-3" style={{ height: 160 }}>
+        <GlassCard className="p-3" style={{ height: 160 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={playChartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
@@ -179,7 +201,7 @@ export default function Stats() {
               <Bar dataKey="value" fill="var(--color-apricot)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </GlassCard>
         <p className="text-[13px] text-text-secondary">
           Ø {Math.round(avgPlayMin)} min / Tag {playTargetMin > 0 && <>· Ziel: {playTargetMin} min</>}
         </p>
@@ -190,21 +212,25 @@ export default function Stats() {
         {streaks.length === 0 ? (
           <p className="text-[13px] text-text-secondary">Noch keine Streaks in diesem Zeitraum.</p>
         ) : (
-          <div className="flex flex-col">
-            {streaks.map(({ habit, streak }) => (
-              <div
-                key={habit.id}
-                className="flex items-center justify-between border-b-[0.5px] border-border py-2 last:border-b-0"
-              >
-                <span className="text-text-primary">
-                  {habit.emoji} {habit.name}
-                </span>
-                <span className="text-[13px] text-text-secondary">
-                  {streak} {streak === 1 ? 'Tag' : 'Tage'} {streak >= 3 && '🔥'}
-                </span>
-              </div>
-            ))}
-          </div>
+          <GlassCard className="px-3">
+            {streaks.map(({ habit, streak }) => {
+              const Icon = resolveHabitIcon(habit.name)
+              return (
+                <div
+                  key={habit.id}
+                  className="flex items-center justify-between gap-2 border-b-[0.5px] border-border py-2 last:border-b-0"
+                >
+                  <span className="flex items-center gap-2 text-text-primary">
+                    <Icon size={18} strokeWidth={1.75} />
+                    {habit.name}
+                  </span>
+                  <span className="text-[13px] text-text-secondary">
+                    {streak} {streak === 1 ? 'Tag' : 'Tage'} {streak >= 3 && '🔥'}
+                  </span>
+                </div>
+              )
+            })}
+          </GlassCard>
         )}
       </section>
 
@@ -213,10 +239,7 @@ export default function Stats() {
           <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
             Gewichtsverlauf
           </h3>
-          <div
-            className="bg-card border-[0.5px] border-border rounded-card p-3"
-            style={{ height: 160 }}
-          >
+          <GlassCard className="p-3" style={{ height: 160 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weightChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
@@ -232,9 +255,16 @@ export default function Stats() {
                 />
               </LineChart>
             </ResponsiveContainer>
-          </div>
+          </GlassCard>
         </section>
       )}
+
+      <section className="flex flex-col gap-2">
+        <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
+          Gesundheits-Übersicht
+        </h3>
+        <HealthHeatmap habitLogs={habitLogs} habits={habits} days={days} />
+      </section>
 
       <section className="flex flex-col gap-2">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
@@ -243,21 +273,25 @@ export default function Stats() {
         {healthEvents.length === 0 ? (
           <p className="text-[13px] text-text-secondary">Keine Gesundheits-Events im Zeitraum.</p>
         ) : (
-          <div className="flex flex-col">
-            {healthEvents.map(({ log, habit }) => (
-              <div
-                key={log.id}
-                className="flex items-center gap-2 border-b-[0.5px] border-border py-2 last:border-b-0"
-              >
-                <span className="text-[13px] text-text-secondary">
-                  {log.date.split('-').reverse().slice(0, 2).join('.')}.
-                </span>
-                <span className="text-text-primary">
-                  {habit.emoji} {healthEventLabel(habit, log)}
-                </span>
-              </div>
-            ))}
-          </div>
+          <GlassCard className="px-3">
+            {healthEvents.map(({ log, habit }) => {
+              const Icon = resolveHabitIcon(habit.name)
+              return (
+                <div
+                  key={log.id}
+                  className="flex items-center gap-2 border-b-[0.5px] border-border py-2 last:border-b-0"
+                >
+                  <span className="text-[13px] text-text-secondary">
+                    {log.date.split('-').reverse().slice(0, 2).join('.')}.
+                  </span>
+                  <span className="flex items-center gap-2 text-text-primary">
+                    <Icon size={16} strokeWidth={1.75} />
+                    {healthEventLabel(habit, log)}
+                  </span>
+                </div>
+              )
+            })}
+          </GlassCard>
         )}
       </section>
     </div>

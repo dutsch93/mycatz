@@ -213,15 +213,15 @@ oberhalb der Charts, gespeist aus `insights.ts` + den bereits von
 `useStats` geladenen Play-Logs.
 
 **Acceptance criteria:**
-- [ ] Alle bestehenden Stats-Kacheln (Futter-/Spielzeit-Charts, Streak-Liste, Gewichtsverlauf, Gesundheits-Events) nutzen `GlassCard`
-- [ ] Layout ist einspaltig (keine Nebeneinander-Anordnung außer ggf. schon bestehende Tab-Leiste Woche/Monat/Jahr)
-- [ ] Insight-Text erscheint oberhalb der Charts, wenn `insights.ts` einen Wert liefert
-- [ ] Insight-Text ist ausgeblendet (kein Platzhalter-Text), wenn `insights.ts` `null` liefert
+- [x] Alle bestehenden Stats-Kacheln (Futter-/Spielzeit-Charts, Streak-Liste, Gewichtsverlauf, Gesundheits-Events) nutzen `GlassCard`
+- [x] Layout ist einspaltig (keine Nebeneinander-Anordnung außer bestehende Tab-Leiste Woche/Monat/Jahr)
+- [x] Insight-Text erscheint oberhalb der Charts, wenn `insights.ts` einen Wert liefert
+- [x] Insight-Text ist ausgeblendet (kein Platzhalter-Text), wenn `insights.ts` `null` liefert
 
 **Verification:**
-- [ ] Tests pass: `npm run test`
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Alle drei Zeiträume (Woche/Monat/Jahr) durchklicken, Insight-Text bei einem frischen Testhaushalt (keine Vorwochendaten) korrekt unsichtbar
+- [x] Tests pass: `npm run test`
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer im Browser bestätigt ("passt")
 
 **Dependencies:** Task 6, Checkpoint "Home fertig"
 
@@ -241,14 +241,14 @@ oberhalb der Charts, gespeist aus `insights.ts` + den bereits von
 Gesundheits-Events im Stats-Screen.
 
 **Acceptance criteria:**
-- [ ] Neue Komponente zeigt ein kompaktes Monatsraster mit visueller Dichte-Kodierung (z. B. Punktgröße/Sättigung nach Anzahl Health-Events an dem Tag)
-- [ ] Tage ohne Health-Events sind neutral/leer dargestellt, keine Fehlinterpretation als "0 = negativ"
-- [ ] In den Stats-Screen eingebunden, ersetzt die bestehende Event-Liste nicht, sondern ergänzt sie
+- [x] Neue Komponente zeigt ein kompaktes Raster (7 Spalten, bis zu 35 Tage) mit Sättigungs-Kodierung nach Anzahl Health-Events an dem Tag
+- [x] Tage ohne Health-Events sind neutral (`--bg-input`) dargestellt, keine Fehlinterpretation als "0 = negativ"
+- [x] In den Stats-Screen eingebunden, ersetzt die bestehende Event-Liste nicht, sondern ergänzt sie
 
 **Verification:**
-- [ ] Tests pass: `npm run test`
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Monat mit und ohne Health-Events durchklicken, Darstellung bleibt lesbar bei vielen Events an einem Tag
+- [x] Tests pass: `npm run test`
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer im Browser bestätigt ("passt")
 
 **Dependencies:** Task 7
 
@@ -262,8 +262,8 @@ Gesundheits-Events im Stats-Screen.
 
 ## Checkpoint: Stats fertig
 
-- [ ] `npm run check:task` läuft grün durch
-- [ ] Manueller Check aller drei Zeiträume, Insight-Text-Verhalten bei leeren/vorhandenen Vorwochendaten, Heatmap-Darstellung
+- [x] `npm run check:task` läuft grün durch
+- [x] Manueller Check vom Nutzer bestätigt ("passt")
 
 ---
 

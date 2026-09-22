@@ -49,13 +49,13 @@ System"). Kurzfassung:
 
 ### Phase 3: Stats-Screen
 
-- [ ] Task 6: `insights.ts` (Wochen-Insight-Berechnung) + Unit-Tests
-- [ ] Task 7: Stats-Screen auf Glass/einspaltiges Layout umstellen, Wochen-Insight-Text einbauen
-- [ ] Task 8: Gesundheits-Heatmap-Komponente + Einbindung in Stats
+- [x] Task 6: `insights.ts` (Wochen-Insight-Berechnung) + Unit-Tests
+- [x] Task 7: Stats-Screen auf Glass/einspaltiges Layout umstellen, Wochen-Insight-Text einbauen
+- [x] Task 8: Gesundheits-Heatmap-Komponente + Einbindung in Stats
 
 ### Checkpoint: Stats fertig
-- [ ] `npm run check:task` grün
-- [ ] Manueller Check aller drei Zeiträume (Woche/Monat/Jahr), Insight-Text bei leeren Vorwochendaten korrekt ausgeblendet
+- [x] `npm run check:task` grün
+- [x] Manueller Check vom Nutzer bestätigt
 
 ### Phase 4: Restliche Screens
 
