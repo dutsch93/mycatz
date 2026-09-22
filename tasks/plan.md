@@ -39,13 +39,13 @@ System"). Kurzfassung:
 ### Phase 2: Home-Dashboard
 
 - [x] Task 3: Shell/Header/BottomNav/DayStrip auf Glass + Verlaufshintergrund umstellen
-- [ ] Task 4: `HabitItem`/`HabitList` zu Icon-Grid-Kacheln umbauen (Interaktionslogik erhalten)
-- [ ] Task 5: Home-Screen-Layout: Hero-Ring-Card, Wochentrend-Kachel, Multi-Katzen-Kachel
+- [x] Task 4: `HabitItem`/`HabitList` zu ausklappbarer Glass-Liste umgebaut (Interaktionslogik erhalten, Design auf Nutzerwunsch angepasst)
+- [x] Task 5: Home-Screen-Layout: Hero-Ring-Card, Wochentrend-Kachel, Multi-Katzen-Kachel
 
 ### Checkpoint: Home fertig
-- [ ] `npm run check:task` grün
-- [ ] Manueller Durchklick: Habit loggen (alle 3 Typen inkl. Notiz), Kalender-Strip, Monatsoverlay, NFC-Button, Quick-Add — alles funktioniert wie vorher
-- [ ] **Review mit Nutzer** vor Weiterarbeit an Stats
+- [x] `npm run check:task` grün
+- [x] Manueller Durchklick vom Nutzer bestätigt
+- [x] **Review mit Nutzer** vor Weiterarbeit an Stats — erledigt
 
 ### Phase 3: Stats-Screen
 

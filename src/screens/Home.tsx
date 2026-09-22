@@ -7,6 +7,9 @@ import DayStrip from '../components/calendar/DayStrip'
 import MonthOverlay from '../components/calendar/MonthOverlay'
 import FitnessRings from '../components/rings/FitnessRings'
 import HabitList from '../components/habits/HabitList'
+import GlassCard from '../components/shared/GlassCard'
+import WeekTrendTile from '../components/shared/WeekTrendTile'
+import MultiCatTile from '../components/shared/MultiCatTile'
 
 export default function Home() {
   const {
@@ -18,6 +21,7 @@ export default function Home() {
     groups,
     habits,
     target,
+    setTarget,
     catIdsForTarget,
     selectedDate,
     setSelectedDate,
@@ -113,12 +117,17 @@ export default function Home() {
         </div>
       )}
 
-      <FitnessRings
-        foodCurrentG={foodCurrentG}
-        foodTargetG={foodTargetG || 1}
-        playCurrentMin={playCurrentMin}
-        playTargetMin={playTargetMin || 1}
-      />
+      <GlassCard className="p-3">
+        <FitnessRings
+          foodCurrentG={foodCurrentG}
+          foodTargetG={foodTargetG || 1}
+          playCurrentMin={playCurrentMin}
+          playTargetMin={playTargetMin || 1}
+        />
+      </GlassCard>
+
+      <WeekTrendTile catIds={catIdsForTarget} />
+      <MultiCatTile cats={cats} date={selectedDate} target={target} onSelect={setTarget} />
 
       {isWebNfcSupported() && (
         <button

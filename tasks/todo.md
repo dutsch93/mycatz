@@ -146,16 +146,16 @@ Katze, Tap wechselt aktive Katze/Gruppe über den bestehenden
 Auswahl-Mechanismus).
 
 **Acceptance criteria:**
-- [ ] `FitnessRings` steckt in einer `GlassCard`, Ring-Logik/-Werte unverändert
-- [ ] Neue Wochentrend-Kachel zeigt Sparkline aus den letzten 7 Tagen Futter-Logs der aktuell ausgewählten Katze/Gruppe, volle Breite
-- [ ] Neue Multi-Katzen-Kachel: pro Katze im Haushalt ein Mini-Ring + Prozentwert, volle Breite, nur gerendert wenn `cats.length > 1`
-- [ ] Tap auf eine Katze in der Multi-Katzen-Kachel wechselt die aktive Auswahl (nutzt denselben Mechanismus wie `Profile.tsx`)
-- [ ] Bestehende Elemente (NFC-Scan-Button, Tages-Log-Liste mit Lösch-Buttons, "Zurück zu Heute"-Badge, Gruppen-Tipp-Text) bleiben funktional erhalten, nur im neuen Look
+- [x] `FitnessRings` steckt in einer `GlassCard`, Ring-Logik/-Werte unverändert
+- [x] Neue Wochentrend-Kachel zeigt Sparkline aus den letzten 7 Tagen Futter-Logs der aktuell ausgewählten Katze/Gruppe, volle Breite
+- [x] Neue Multi-Katzen-Kachel: pro Katze im Haushalt ein Mini-Ring + Prozentwert, volle Breite, nur gerendert wenn `cats.length > 1`
+- [x] Tap auf eine Katze in der Multi-Katzen-Kachel wechselt die aktive Auswahl (nutzt denselben Mechanismus wie `Profile.tsx`)
+- [x] Bestehende Elemente (NFC-Scan-Button, Tages-Log-Liste mit Lösch-Buttons, "Zurück zu Heute"-Badge, Gruppen-Tipp-Text) bleiben funktional erhalten, nur im neuen Look
 
 **Verification:**
-- [ ] Tests pass: `npm run test`
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Katze wechseln über neue Kachel funktioniert, Sparkline zeigt plausible Werte, NFC-Button weiterhin sichtbar (auf Android/Web-NFC-fähigem Gerät oder simuliert), Log-Einträge weiterhin lösch- bzw. für Gäste nicht löschbar (Rollen-Check bleibt bestehen)
+- [x] Tests pass: `npm run test`
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer im Browser bestätigt ("passt")
 
 **Dependencies:** Task 3, Task 4
 
@@ -171,9 +171,9 @@ Auswahl-Mechanismus).
 
 ## Checkpoint: Home fertig
 
-- [ ] `npm run check:task` läuft grün durch
-- [ ] Manueller Durchklick: Habit loggen (alle 3 Typen inkl. Notiz), Kalender-Strip-Auswahl, Monatsoverlay öffnen/schließen, NFC-Button (falls testbar), Quick-Add-Button — alles funktioniert wie vor dem Umbau
-- [ ] **Review mit Nutzer**, bevor Stats-Screen angefasst wird
+- [x] `npm run check:task` läuft grün durch
+- [x] Manueller Durchklick vom Nutzer bestätigt
+- [x] **Review mit Nutzer** — bestätigt ("passt, mach weiter")
 
 ---
 
