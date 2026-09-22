@@ -14,12 +14,30 @@ body,
 
 body {
   margin: 0;
-  background: var(--bg-page);
+  background: var(--bg-page-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-family);
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-body);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Liquid-Glass-Karten-Look. Fallback ohne backdrop-filter-Support:
+   höhere Deckkraft, damit Text auf dem Verlaufshintergrund lesbar bleibt. */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--glass-shadow);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
 }
 
 h1,

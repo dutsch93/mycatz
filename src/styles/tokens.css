@@ -37,4 +37,18 @@
   --radius-card: 12px;
   --radius-control: 8px;
   --touch-target-min: 44px;
+
+  /* Liquid Glass: warmer Verlaufshintergrund */
+  --bg-page-gradient:
+    radial-gradient(circle at 15% 10%, rgba(232,168,124,0.55), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(133,183,157,0.45), transparent 50%),
+    radial-gradient(circle at 30% 90%, rgba(212,165,116,0.35), transparent 50%),
+    linear-gradient(160deg, #FFF7EE 0%, #FBEFE3 40%, #F3E9DD 100%);
+
+  /* Liquid Glass: Karten-Look */
+  --glass-bg: rgba(255,255,255,0.42);
+  --glass-border: rgba(255,255,255,0.65);
+  --glass-blur: blur(22px) saturate(180%);
+  --glass-radius: 24px;
+  --glass-shadow: 0 8px 24px rgba(120,90,60,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
 }
