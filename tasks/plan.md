@@ -62,12 +62,12 @@ System"). Kurzfassung:
 - [x] Task 9: Settings + Profile auf Glass-Look umstellen
 - [x] Task 10: Onboarding-Wizard (4 Schritte) auf Glass-Look umstellen
 - [x] Task 11: `MonthOverlay`, `BottomSheet`, `FeedingQuickAdd` auf Glass-Look umstellen
-- [ ] Task 12: Alte Flat-Tokens aus `tokens.css` entfernen, `CLAUDE.md`-Designsystem-Abschnitt durch Spec-Inhalt ersetzen
+- [x] Task 12: Alte Flat-Tokens aus `tokens.css` entfernt, `CLAUDE.md`-Designsystem-Abschnitt durch Ist-Zustand ersetzt
 
 ### Checkpoint: Fertig
-- [ ] `npm run check:task` grün, Bundle-Größe gegen `CONSTRAINTS.md`-Ratchet geprüft
-- [ ] Kompletter Durchklick aller Screens auf einem echten Gerät (iOS Safari + Android Chrome)
-- [ ] CLAUDE.md aktualisiert und committed
+- [x] `npm run check:task` grün, Bundle-Größe gegen `CONSTRAINTS.md`-Ratchet geprüft (aktualisiert: ~241→~249 kB)
+- [ ] Kompletter Durchklick aller Screens auf einem echten Gerät (iOS Safari + Android Chrome) — steht noch aus
+- [x] CLAUDE.md aktualisiert und committed
 
 ## Risks and Mitigations
 

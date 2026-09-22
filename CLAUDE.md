@@ -8,7 +8,7 @@
 
 **Zielgruppe:** Katzenbesitzer:innen (20–40), die täglich auf dem Handy via Home-Screen-Bookmark tracken. Kein App-Store.
 
-**Design-Philosophie:** Glanceable Utility. Apple-clean, warmtonig. Kein Over-Design, keine Katzen-Illustrationen — die Wärme kommt über die Farben. Daten statt Deko.
+**Design-Philosophie:** Glanceable Utility. Apple-clean, warmtonig, "Liquid Glass" (Blur/Transparenz statt Flat Design seit dem Umbau 2026-09-22, siehe `docs/superpowers/specs/2026-09-21-liquid-glass-dashboard-design.md`). Kein Over-Design, keine Katzen-Illustrationen — die Wärme kommt über Farbverlauf und Akzentfarben. Daten statt Deko.
 
 ---
 
@@ -29,14 +29,30 @@
 
 ## Designsystem
 
+Seit dem Liquid-Glass-Umbau (2026-09-22) gilt: warmer Verlaufshintergrund
+statt flacher Seitenfarbe, Karten als durchscheinende `.glass`-Flächen
+statt `--bg-card` + Border, Lucide-Icons statt Emoji. Details und
+Herleitung: `docs/superpowers/specs/2026-09-21-liquid-glass-dashboard-design.md`.
+
 ### Farbpalette
 
 ```css
 :root {
-  /* Hintergründe */
-  --bg-page:          #FAFAF8;   /* Seitenhintergrund */
-  --bg-card:          #FFFFFF;   /* Cards */
-  --bg-input:         #F5F3F0;   /* Input-Felder, Chip-BGs */
+  /* Seitenhintergrund: warmer Verlauf statt Flat-Farbe */
+  --bg-page-gradient:
+    radial-gradient(circle at 15% 10%, rgba(232,168,124,0.55), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(133,183,157,0.45), transparent 50%),
+    radial-gradient(circle at 30% 90%, rgba(212,165,116,0.35), transparent 50%),
+    linear-gradient(160deg, #FFF7EE 0%, #FBEFE3 40%, #F3E9DD 100%);
+
+  /* Glass-Karten-Look (siehe .glass-Utility in global.css) */
+  --glass-bg:     rgba(255,255,255,0.42);
+  --glass-border: rgba(255,255,255,0.65);
+  --glass-blur:   blur(22px) saturate(180%);
+  --glass-radius: 24px;
+  --glass-shadow: 0 8px 24px rgba(120,90,60,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+
+  --bg-input:         #F5F3F0;   /* Input-Felder, Chip-BGs (weiterhin opak) */
 
   /* Akzentfarben (funktional gebunden) */
   --color-apricot:    #E8A87C;   /* Buttons, aktive Elemente, NFC-Feedback, Spielzeit-Ring */
@@ -50,11 +66,8 @@
   --text-secondary:   #8E8E93;   /* Labels, Zeitstempel */
   --text-on-color:    #FFFFFF;   /* Text auf farbigen Buttons */
 
-  /* Borders */
-  --border-default:   #E8E6E1;   /* Card-Borders, Dividers */
-
-  /* Shadows */
-  /* Keine Schatten — Flat Design */
+  /* Borders (weiterhin für opake Elemente wie Inputs/Buttons) */
+  --border-default:   #E8E6E1;
 }
 ```
 
@@ -68,19 +81,24 @@
 
 ### Typografie
 
-- **Font:** Inter (Google Fonts)
+- **Font:** Inter (Google Fonts) — SF Pro ist für Web/PWA nicht frei lizenziert, Inter ist der Standard-Ersatz
 - **Headlines:** 22px, Weight 500
 - **Body:** 16px, Weight 400
 - **Labels/Timestamps:** 13px, `--color-gray`
 - Keine anderen Fonts. Kein Bold über 600.
 
+### Icons
+
+- **Lucide** (`lucide-react`) statt Emoji, durchgängig in der App
+- Habit-Icons: feste Name-zu-Icon-Mapping-Tabelle in `src/lib/habitIcons.ts` (Fallback `CircleHelp` für unbekannte/eigene Habits); `habit_definitions.emoji` in der DB bleibt unverändert, nur die UI-Auflösung nutzt das Mapping
+
 ### UI-Elemente
 
-- **Cards:** `--bg-card`, `0.5px solid --border-default`, `border-radius: 12px`, kein Shadow
+- **Cards:** `.glass`-Utility (`GlassCard`-Komponente) — durchscheinend, `blur(22px)`, `border-radius: 24px`, weicher Schatten statt hartem Rand
 - **Buttons:** `--color-apricot` Background, weißer Text, `border-radius: 8px`
-- **Inputs:** `--bg-input`, `0.5px solid --border-default`, `border-radius: 8px`
+- **Inputs:** `--bg-input` (opak), `0.5px solid --border-default`, `border-radius: 8px`
 - **Charts:** Salbeigrün für Futter, Apricot für Spielzeit
-- **Layout:** Mobile-first, Single-Column, max-width 440px zentriert
+- **Layout:** Mobile-first, Single-Column, max-width 440px zentriert — auch Habits sind eine ausklappbare Liste (kein Kachel-Grid), einzige Ausnahme ist das 7-Spalten-Dichteraster der Gesundheits-Heatmap in den Stats
 - **Touch-Targets:** Minimum 44×44px
 
 ---

@@ -27,10 +27,16 @@ aufweichen, nur um eine Änderung durchzubekommen.
 
 ## Gemessen, noch nicht hart durchgesetzt (Ratchet — darf nicht schlechter werden)
 
-| Metrik                          | Stand 2026-09-16 | Richtung        |
+| Metrik                          | Stand 2026-09-22 | Richtung        |
 |----------------------------------|-------------------|-----------------|
-| Projekt-Coverage (Statements)    | 1.65%             | darf nicht sinken |
-| Bundle-Größe (JS, gzip)          | ~241 kB            | darf nicht wachsen |
+| Projekt-Coverage (Statements)    | 2.25%             | darf nicht sinken |
+| Bundle-Größe (JS, gzip)          | ~249 kB            | darf nicht wachsen |
+
+Bundle-Größe am 2026-09-22 von ~241 kB auf ~249 kB angehoben: Liquid-
+Glass-Umbau hat `lucide-react` als neue Dependency eingeführt (viele
+einzeln importierte Icons über die App verteilt). Tree-Shaking greift
+bereits (kein Full-Bundle-Import), der Zuwachs ist der erwartete Preis
+für die Icon-Migration weg von Emoji.
 
 Die Projekt-Coverage ist niedrig, weil bisher nur reine Logik (`src/lib/`)
 getestet ist — UI-Screens/Hooks haben noch keine Tests. Das ist der

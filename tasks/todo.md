@@ -358,13 +358,15 @@ durch den Inhalt der Spec ersetzen (siehe Spec-Abschnitt "Migration von
 CLAUDE.md").
 
 **Acceptance criteria:**
-- [ ] `grep` nach den alten Token-Namen (`--bg-card` als Flat-Wert, `--border-default` falls ersetzt) findet keine Verwendung mehr im Quellcode außerhalb der Tokens-Datei selbst
-- [ ] `CLAUDE.md`-Abschnitt "Designsystem" beschreibt den tatsächlichen Ist-Zustand (Verlauf, Glass, Lucide-Icons)
-- [ ] Bundle-Größe (gzip, `dist/assets/*.js`) wurde gemessen und mit dem `CONSTRAINTS.md`-Ratchet-Wert (~241 kB) verglichen; Ratchet-Zeile aktualisiert falls gestiegen
+- [x] `--bg-page`/`--bg-card` (nie via `var()` referenziert, nur Doku-Duplikate der Tailwind-Config) aus `tokens.css` entfernt; `--border-default`/`--bg-input` bleiben, da weiterhin aktiv für opake Elemente (Inputs, Buttons) genutzt
+- [x] `CLAUDE.md`-Abschnitt "Designsystem" beschreibt den tatsächlichen Ist-Zustand (Verlauf, Glass, Lucide-Icons, Icon-Mapping, Listen- statt Kachel-Layout für Habits)
+- [x] Bundle-Größe gemessen (~249 kB gzip, vorher ~241 kB) und `CONSTRAINTS.md`-Ratchet aktualisiert (erwarteter Zuwachs durch `lucide-react`)
 
 **Verification:**
-- [ ] `npm run check:task` läuft grün durch
-- [ ] Build succeeds: `npm run build`, Bundle-Größe geprüft
+- [x] `npm run check:task` läuft grün durch
+- [x] Build succeeds: `npm run build`, Bundle-Größe geprüft
+
+**Hinweis:** Die ASCII-Mockups im Abschnitt "Screen-Architektur" (weiter unten in CLAUDE.md) wurden nicht aktualisiert — das war explizit nur der "Designsystem"-Abschnitt. Sag Bescheid, falls die Mockups auch überarbeitet werden sollen.
 
 **Dependencies:** Task 11
 
