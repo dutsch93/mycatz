@@ -187,13 +187,13 @@ Auswahl-Mechanismus).
 zurück oder `null` bei fehlenden Vorwochen-Daten (kein Divide-by-Zero-Text).
 
 **Acceptance criteria:**
-- [ ] Funktion gibt korrektes Prozent-Delta für einen Beispieldatensatz zurück (Anstieg, Rückgang, gleich)
-- [ ] Vorwoche = 0 Minuten → Rückgabe `null` statt `Infinity`/`NaN`
-- [ ] Beide Wochen = 0 Minuten → Rückgabe `null` (keine sinnvolle Aussage möglich)
+- [x] Funktion gibt korrektes Prozent-Delta für einen Beispieldatensatz zurück (Anstieg, Rückgang, gleich)
+- [x] Vorwoche = 0 Minuten → Rückgabe `null` statt `Infinity`/`NaN`
+- [x] Beide Wochen = 0 Minuten → Rückgabe `null` (keine sinnvolle Aussage möglich)
 
 **Verification:**
-- [ ] Tests pass: `npm run test`
-- [ ] Types/Lint: `npm run check:fast`
+- [x] Tests pass: `npm run test`
+- [x] Types/Lint: `npm run check:fast`
 
 **Dependencies:** None (parallel zu Phase 2 startbar, aber sinnvollerweise nach Checkpoint "Home fertig")
 
