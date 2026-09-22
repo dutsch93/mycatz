@@ -29,16 +29,16 @@ System"). Kurzfassung:
 
 ### Phase 1: Fundament
 
-- [ ] Task 1: `lucide-react` installieren, Design-Tokens + `.glass`-Utility + `GlassCard`-Komponente anlegen
-- [ ] Task 2: `habitIcons.ts` Mapping-Modul + Unit-Tests
+- [x] Task 1: `lucide-react` installieren, Design-Tokens + `.glass`-Utility + `GlassCard`-Komponente anlegen
+- [x] Task 2: `habitIcons.ts` Mapping-Modul + Unit-Tests
 
 ### Checkpoint: Fundament
-- [ ] `npm run check:task` grün
-- [ ] `GlassCard` manuell in einer Wegwerf-Testseite/-route verifiziert (Blur sichtbar, kein Crash)
+- [x] `npm run check:task` grün
+- [x] `GlassCard` manuell verifiziert (Blur sichtbar, kein Crash) — über Task 3 im Browser bestätigt
 
 ### Phase 2: Home-Dashboard
 
-- [ ] Task 3: Shell/Header/BottomNav/DayStrip auf Glass + Verlaufshintergrund umstellen
+- [x] Task 3: Shell/Header/BottomNav/DayStrip auf Glass + Verlaufshintergrund umstellen
 - [ ] Task 4: `HabitItem`/`HabitList` zu Icon-Grid-Kacheln umbauen (Interaktionslogik erhalten)
 - [ ] Task 5: Home-Screen-Layout: Hero-Ring-Card, Wochentrend-Kachel, Multi-Katzen-Kachel
 

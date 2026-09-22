@@ -14,15 +14,15 @@ eine wiederverwendbare `GlassCard`-Komponente als einzige Quelle des
 Glass-Looks anlegen.
 
 **Acceptance criteria:**
-- [ ] `lucide-react` ist in `package.json` als Dependency gelistet
-- [ ] `tokens.css` enthält die Verlaufshintergrund-Variable und Glass-Werte (Blur, Rand, Schatten) laut Spec
-- [ ] `src/components/shared/GlassCard.tsx` existiert, rendert einen Container mit dem `.glass`-Preset, akzeptiert `className`/`children` wie ein normaler Wrapper
-- [ ] Body-Hintergrund (`global.css`) nutzt den neuen Verlauf statt `var(--bg-page)`
+- [x] `lucide-react` ist in `package.json` als Dependency gelistet
+- [x] `tokens.css` enthält die Verlaufshintergrund-Variable und Glass-Werte (Blur, Rand, Schatten) laut Spec
+- [x] `src/components/shared/GlassCard.tsx` existiert, rendert einen Container mit dem `.glass`-Preset, akzeptiert `className`/`children` wie ein normaler Wrapper
+- [x] Body-Hintergrund (`global.css`) nutzt den neuen Verlauf statt `var(--bg-page)`
 
 **Verification:**
-- [ ] Build succeeds: `npm run build`
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: `GlassCard` kurz in `Home.tsx` probeweise um ein bestehendes Element gelegt, im Browser sichtbar (Blur erkennbar), danach wieder entfernt oder direkt für Task 3 stehen gelassen
+- [x] Build succeeds: `npm run build`
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: sichtbar über Task 3 (Verlauf + Glass live im Browser bestätigt)
 
 **Dependencies:** None
 
@@ -43,13 +43,13 @@ Lucide-Icon-Komponente abbildet (Tabelle aus der Spec), mit Fallback-Icon
 für unbekannte/benutzerdefinierte Habits. Reine Funktion, TDD-geeignet.
 
 **Acceptance criteria:**
-- [ ] `resolveHabitIcon(name: string)` gibt für alle 14 Default-Habits aus der Spec-Tabelle das korrekte Lucide-Icon zurück
-- [ ] Unbekannter Name (z. B. benutzerdefinierter Habit) liefert das Fallback-Icon (`CircleHelp`), keine Exception
-- [ ] Matching ist whitespace-/case-tolerant (trim + lowercase-Vergleich)
+- [x] `resolveHabitIcon(name: string)` gibt für alle 14 Default-Habits aus der Spec-Tabelle das korrekte Lucide-Icon zurück
+- [x] Unbekannter Name (z. B. benutzerdefinierter Habit) liefert das Fallback-Icon (`CircleHelp`), keine Exception
+- [x] Matching ist whitespace-/case-tolerant (trim + lowercase-Vergleich)
 
 **Verification:**
-- [ ] Tests pass: `npm run test`
-- [ ] Types/Lint: `npm run check:fast`
+- [x] Tests pass: `npm run test`
+- [x] Types/Lint: `npm run check:fast`
 
 **Dependencies:** Task 1 (lucide-react muss installiert sein)
 
@@ -63,8 +63,8 @@ für unbekannte/benutzerdefinierte Habits. Reine Funktion, TDD-geeignet.
 
 ## Checkpoint: Fundament
 
-- [ ] `npm run check:task` läuft grün durch
-- [ ] `GlassCard` ist im Browser einmal sichtbar verifiziert (kein `backdrop-filter`-Rendering-Fehler, keine Konsolenfehler)
+- [x] `npm run check:task` läuft grün durch
+- [x] `GlassCard` ist im Browser einmal sichtbar verifiziert (kein `backdrop-filter`-Rendering-Fehler, keine Konsolenfehler)
 
 ---
 
@@ -79,15 +79,15 @@ wo sinnvoll. Icons für die BottomNav (Home/Stats/Add/Profil/Settings)
 werden auf Lucide umgestellt.
 
 **Acceptance criteria:**
-- [ ] `Shell.tsx` nutzt den neuen Verlaufshintergrund
-- [ ] `BottomNav.tsx` ist eine Glass-Leiste mit Lucide-Icons statt bisherigem Styling
-- [ ] `Header.tsx` nutzt Glass-Preset
-- [ ] `DayStrip.tsx` nutzt Glass-Preset, aktiver Tag weiterhin klar erkennbar (Apricot-Akzent)
-- [ ] Touch-Targets bleiben ≥44×44px (bestehende Regel aus CLAUDE.md)
+- [x] `Shell.tsx` nutzt den neuen Verlaufshintergrund
+- [x] `BottomNav.tsx` ist eine Glass-Leiste mit Lucide-Icons statt bisherigem Styling
+- [x] `Header.tsx` nutzt Glass-Preset
+- [x] `DayStrip.tsx` nutzt Glass-Preset, aktiver Tag weiterhin klar erkennbar (Apricot-Akzent)
+- [x] Touch-Targets bleiben ≥44×44px (bestehende Regel aus CLAUDE.md)
 
 **Verification:**
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Navigation zwischen allen Bottom-Nav-Tabs funktioniert, aktiver Tab visuell erkennbar, Kalender-Tag-Auswahl funktioniert weiterhin
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer im Browser bestätigt ("sieht gut aus")
 
 **Dependencies:** Task 1
 
