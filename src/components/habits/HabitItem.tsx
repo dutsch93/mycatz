@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { ChevronDown, Pencil } from 'lucide-react'
 import type { HabitDefinition, HabitLog } from '../../types'
+import { resolveHabitIcon } from '../../lib/habitIcons'
 
 interface Props {
   habit: HabitDefinition
@@ -14,10 +16,16 @@ interface Props {
 }
 
 export default function HabitItem({ habit, log, mixed, onLog }: Props) {
-  const [countInputOpen, setCountInputOpen] = useState(false)
-  const [countValue, setCountValue] = useState('1')
-  const [noteOpen, setNoteOpen] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [countValue, setCountValue] = useState(String(log?.count ?? 1))
   const [noteValue, setNoteValue] = useState(log?.note ?? '')
+
+  const Icon = resolveHabitIcon(habit.name)
+
+  function confirmCount() {
+    const n = Number(countValue)
+    onLog(true, { count: Number.isFinite(n) ? n : 0, note: log?.note })
+  }
 
   function saveNote() {
     onLog(log?.value ?? true, {
@@ -25,118 +33,121 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
       selectedOption: log?.selected_option,
       note: noteValue || null,
     })
-    setNoteOpen(false)
   }
 
-  function confirmCount() {
-    const n = Number(countValue)
-    onLog(true, { count: Number.isFinite(n) ? n : 0, note: log?.note })
-    setCountInputOpen(false)
-  }
+  const statusText =
+    habit.type === 'count'
+      ? log?.value
+        ? `${log.count ?? 0}×`
+        : undefined
+      : habit.type === 'select'
+        ? (log?.selected_option ?? undefined)
+        : log?.value === true
+          ? 'Ja'
+          : log?.value === false
+            ? 'Nein'
+            : undefined
 
   return (
-    <div className="border-b-[0.5px] border-border py-3 last:border-b-0">
-      <div className="flex items-center gap-2">
-        <span className="text-xl">{habit.emoji}</span>
-        <span className="flex-1 text-text-primary">
+    <div className="border-b-[0.5px] border-border last:border-b-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full min-h-[44px] flex items-center gap-3 py-3"
+      >
+        <Icon size={20} strokeWidth={1.75} className="text-text-primary shrink-0" />
+        <span className="flex-1 text-left text-text-primary">
           {habit.name}
           {mixed && <span className="ml-2 text-[13px] text-text-secondary">(gemischt)</span>}
         </span>
+        {statusText && <span className="text-[13px] text-text-secondary">{statusText}</span>}
+        {log?.note && <Pencil size={12} className="text-apricot shrink-0" />}
+        <ChevronDown
+          size={18}
+          className={`text-text-secondary shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
 
-        {habit.type === 'count' && log?.value && (
-          <span className="text-[13px] text-text-secondary">{log.count ?? 0}×</span>
-        )}
+      {open && (
+        <div className="pb-3 pl-8 flex flex-col gap-2">
+          {habit.type === 'boolean' && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => onLog(true, { note: log?.note })}
+                className={`min-h-[44px] px-4 rounded-control ${log?.value === true ? 'bg-sage/20' : 'bg-input'}`}
+              >
+                Ja
+              </button>
+              <button
+                type="button"
+                onClick={() => onLog(false, { note: log?.note })}
+                className={`min-h-[44px] px-4 rounded-control ${log?.value === false ? 'bg-muted-red/20' : 'bg-input'}`}
+              >
+                Nein
+              </button>
+            </div>
+          )}
 
-        <button
-          type="button"
-          aria-label="Notiz"
-          onClick={() => setNoteOpen((v) => !v)}
-          className={`w-11 h-11 flex items-center justify-center ${
-            log?.note ? 'text-apricot' : 'text-text-secondary'
-          }`}
-        >
-          📝
-        </button>
+          {habit.type === 'count' && (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={countValue}
+                onChange={(e) => setCountValue(e.target.value)}
+                className="w-20 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
+              />
+              <button
+                type="button"
+                onClick={confirmCount}
+                className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color"
+              >
+                Speichern
+              </button>
+              <button
+                type="button"
+                onClick={() => onLog(false, { count: 0, note: log?.note })}
+                className="min-h-[44px] px-4 rounded-control text-text-secondary"
+              >
+                Keine
+              </button>
+            </div>
+          )}
 
-        {habit.type === 'select' ? (
-          <select
-            value={log?.selected_option ?? ''}
-            onChange={(e) => onLog(true, { selectedOption: e.target.value, note: log?.note })}
-            className="min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border text-text-primary"
-          >
-            <option value="" disabled>
-              wählen…
-            </option>
-            {(habit.options ?? []).map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
+          {habit.type === 'select' && (
+            <select
+              value={log?.selected_option ?? ''}
+              onChange={(e) => onLog(true, { selectedOption: e.target.value, note: log?.note })}
+              className="min-h-[44px] px-2 rounded-control bg-input border-[0.5px] border-border text-text-primary"
+            >
+              <option value="" disabled>
+                wählen…
               </option>
-            ))}
-          </select>
-        ) : (
-          <>
+              {(habit.options ?? []).map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={noteValue}
+              onChange={(e) => setNoteValue(e.target.value)}
+              placeholder="Notiz"
+              className="flex-1 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
+            />
             <button
               type="button"
-              aria-label={`${habit.name} ja`}
-              onClick={() =>
-                habit.type === 'count' ? setCountInputOpen(true) : onLog(true, { note: log?.note })
-              }
-              className={`w-11 h-11 flex items-center justify-center rounded-control ${
-                log?.value === true ? 'bg-sage/20' : ''
-              }`}
+              onClick={saveNote}
+              className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color"
             >
-              👍
+              OK
             </button>
-            <button
-              type="button"
-              aria-label={`${habit.name} nein`}
-              onClick={() => onLog(false, { count: 0, note: log?.note })}
-              className={`w-11 h-11 flex items-center justify-center rounded-control ${
-                log?.value === false ? 'bg-muted-red/20' : ''
-              }`}
-            >
-              👎
-            </button>
-          </>
-        )}
-      </div>
-
-      {countInputOpen && (
-        <div className="flex items-center gap-2 mt-2">
-          <input
-            type="number"
-            value={countValue}
-            onChange={(e) => setCountValue(e.target.value)}
-            className="w-20 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-            autoFocus
-          />
-          <button
-            type="button"
-            onClick={confirmCount}
-            className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color"
-          >
-            Speichern
-          </button>
-        </div>
-      )}
-
-      {noteOpen && (
-        <div className="flex items-center gap-2 mt-2">
-          <input
-            type="text"
-            value={noteValue}
-            onChange={(e) => setNoteValue(e.target.value)}
-            placeholder="Notiz"
-            className="flex-1 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-            autoFocus
-          />
-          <button
-            type="button"
-            onClick={saveNote}
-            className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color"
-          >
-            OK
-          </button>
+          </div>
         </div>
       )}
     </div>

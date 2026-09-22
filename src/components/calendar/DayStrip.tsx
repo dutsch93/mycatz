@@ -1,11 +1,14 @@
+import { CalendarDays } from 'lucide-react'
 import { dayNumber, lastDays, todayIso, weekdayShort } from '../../lib/dates'
 
 export default function DayStrip({
   selectedDate,
   onSelect,
+  onOpenMonth,
 }: {
   selectedDate: string
   onSelect: (date: string) => void
+  onOpenMonth: () => void
 }) {
   const days = lastDays(selectedDate, 7)
   const today = todayIso()
@@ -30,6 +33,14 @@ export default function DayStrip({
           </button>
         )
       })}
+      <button
+        type="button"
+        onClick={onOpenMonth}
+        aria-label="Monatskalender öffnen"
+        className="flex items-center justify-center w-10 h-14 rounded-control text-text-secondary"
+      >
+        <CalendarDays size={20} strokeWidth={1.75} />
+      </button>
     </div>
   )
 }

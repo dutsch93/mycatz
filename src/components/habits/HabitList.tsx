@@ -1,5 +1,6 @@
 import type { HabitDefinition, HabitLog } from '../../types'
 import HabitItem from './HabitItem'
+import GlassCard from '../shared/GlassCard'
 
 interface Props {
   habits: HabitDefinition[]
@@ -34,21 +35,23 @@ export default function HabitList({ habits, logs, onLog }: Props) {
 
   return (
     <div>
-      <h3 className="text-[13px] text-text-secondary uppercase tracking-wide mb-1">
+      <h3 className="text-[13px] text-text-secondary uppercase tracking-wide mb-2">
         Daily Habits
       </h3>
-      {habits.map((habit) => {
-        const { log, mixed } = resolveHabitLog(logs, habit.id)
-        return (
-          <HabitItem
-            key={habit.id}
-            habit={habit}
-            log={log}
-            mixed={mixed}
-            onLog={(value, extra) => onLog(habit.id, value, extra)}
-          />
-        )
-      })}
+      <GlassCard className="px-3">
+        {habits.map((habit) => {
+          const { log, mixed } = resolveHabitLog(logs, habit.id)
+          return (
+            <HabitItem
+              key={habit.id}
+              habit={habit}
+              log={log}
+              mixed={mixed}
+              onLog={(value, extra) => onLog(habit.id, value, extra)}
+            />
+          )
+        })}
+      </GlassCard>
     </div>
   )
 }

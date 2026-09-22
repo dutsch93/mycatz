@@ -101,29 +101,28 @@ werden auf Lucide umgestellt.
 
 ---
 
-### Task 4: `HabitItem`/`HabitList` zu Icon-Grid-Kacheln umbauen
+### Task 4: `HabitItem`/`HabitList` zu ausklappbarer Glass-Liste umbauen
 
-**Description:** Größter Verhaltens-kritischer Schritt: Die Habit-Liste
-wird zu einem 3-Spalten-Kachel-Grid (laut Spec-Mockup) umgebaut. **Die
-bestehende Interaktionslogik darf sich nicht ändern** — nur die
-Präsentation: Tap auf Kachel = wie bisheriger 👍-Tap bei boolean, öffnet
-weiterhin Zahl-Input bei `count`, Dropdown bleibt bei `select`, Notizfeld
-bleibt über eigenes Icon erreichbar. `HabitItem` nutzt `habitIcons.ts`
-statt `habit.emoji`.
+**Description:** Abweichend vom ursprünglichen Kachel-Grid-Mockup (Nutzer-Feedback:
+"eher eine Listenansicht, aber ausklappbar"): Habits bleiben eine
+einspaltige Liste in einer `GlassCard`, jede Zeile zeigt Icon + Name +
+rechtsbündig den aktuellen Wert. Tap auf die Zeile klappt sie auf und
+zeigt die passenden Controls (Ja/Nein-Buttons, Zahl-Eingabe, Dropdown)
+plus Notizfeld. `HabitItem` nutzt `habitIcons.ts` statt `habit.emoji`.
 
 **Acceptance criteria:**
-- [ ] Habits werden als 3-Spalten-Grid quadratischer Kacheln gerendert (Icon + Name), Rest der Liste bleibt einspaltig darunter/darüber wie im Rest der App
-- [ ] Erledigt-Zustand (boolean `true`) visuell erkennbar über Kachel-Hintergrund/Icon-Farbe (Sage), nicht mehr über separate 👍/👎-Buttons nebeneinander
-- [ ] `count`-Typ: Tap öffnet weiterhin die Zahl-Eingabe, Anzeige der aktuellen Zahl auf der Kachel
-- [ ] `select`-Typ: Auswahl weiterhin möglich (z. B. über Bottom-Sheet oder Inline-Dropdown bei Tap), gewählte Option auf der Kachel sichtbar
-- [ ] Notizfeld weiterhin pro Habit erreichbar und funktionsfähig (Speichern/Lesen von `note`)
-- [ ] "nein"-Fall (boolean `false`) weiterhin auswählbar (z. B. long-press oder zweiter Tap-Zustand — konkrete Interaktion in dieser Task festlegen und dokumentieren)
-- [ ] `mixed`-Zustand (Gruppen-Habit mit unterschiedlichen Werten pro Katze) bleibt visuell unterscheidbar
+- [x] Habits werden als einspaltige Liste in einer `GlassCard` gerendert (Icon + Name + Wert rechts)
+- [x] Zeile ist ausklappbar (Tap togglet `open`), Chevron-Icon zeigt Zustand an
+- [x] `boolean`-Typ: aufgeklappt zeigt Ja/Nein-Buttons, Zustand farblich erkennbar (Sage/Muted-Red)
+- [x] `count`-Typ: aufgeklappt zeigt Zahl-Eingabe + "Speichern" + "Keine" (ersetzt altes 👎), aktuelle Zahl in der Kopfzeile sichtbar
+- [x] `select`-Typ: aufgeklappt zeigt Dropdown, gewählte Option in der Kopfzeile sichtbar
+- [x] Notizfeld immer im aufgeklappten Bereich verfügbar (Speichern/Lesen von `note`), Stift-Icon in der Kopfzeile zeigt an, ob eine Notiz existiert
+- [x] `mixed`-Zustand (Gruppen-Habit mit unterschiedlichen Werten pro Katze) bleibt sichtbar ("(gemischt)"-Label)
 
 **Verification:**
-- [ ] Tests pass: `npm run test` (bestehende Tests dürfen nicht brechen, `habitIcons` bereits getestet)
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Jeden der 3 Habit-Typen einmal komplett durchspielen (loggen, ändern, Notiz hinzufügen, bei count den Wert ändern, bei boolean auf "nein" wechseln), Realtime-Update auf zweitem Gerät/Tab weiterhin sichtbar
+- [x] Tests pass: `npm run test` (bestehende Tests unverändert grün, `habitIcons` bereits getestet)
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer im Browser bestätigt ("perfekt")
 
 **Dependencies:** Task 2, Task 3
 

@@ -84,19 +84,11 @@ export default function Home() {
 
   return (
     <div className="pb-6">
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <DayStrip selectedDate={selectedDate} onSelect={setSelectedDate} />
-        </div>
-        <button
-          type="button"
-          onClick={() => setMonthOpen(true)}
-          className="w-11 h-11 flex items-center justify-center text-text-secondary text-xl"
-          aria-label="Monatskalender öffnen"
-        >
-          📅
-        </button>
-      </div>
+      <DayStrip
+        selectedDate={selectedDate}
+        onSelect={setSelectedDate}
+        onOpenMonth={() => setMonthOpen(true)}
+      />
 
       {monthOpen && (
         <MonthOverlay
