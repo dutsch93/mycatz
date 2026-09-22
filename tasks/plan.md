@@ -59,9 +59,9 @@ System"). Kurzfassung:
 
 ### Phase 4: Restliche Screens
 
-- [ ] Task 9: Settings + Profile auf Glass-Look umstellen
-- [ ] Task 10: Onboarding-Wizard (4 Schritte) auf Glass-Look umstellen
-- [ ] Task 11: `MonthOverlay`, `BottomSheet`, `FeedingQuickAdd` auf Glass-Look umstellen
+- [x] Task 9: Settings + Profile auf Glass-Look umstellen
+- [x] Task 10: Onboarding-Wizard (4 Schritte) auf Glass-Look umstellen
+- [x] Task 11: `MonthOverlay`, `BottomSheet`, `FeedingQuickAdd` auf Glass-Look umstellen
 - [ ] Task 12: Alte Flat-Tokens aus `tokens.css` entfernen, `CLAUDE.md`-Designsystem-Abschnitt durch Spec-Inhalt ersetzen
 
 ### Checkpoint: Fertig

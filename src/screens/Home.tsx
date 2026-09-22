@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 import { formatLongDate, todayIso } from '../lib/dates'
 import { isWebNfcSupported, scanNfcTag } from '../lib/nfc'
+import { Utensils, Volleyball, NotebookPen, X, Nfc } from 'lucide-react'
 import DayStrip from '../components/calendar/DayStrip'
 import MonthOverlay from '../components/calendar/MonthOverlay'
 import FitnessRings from '../components/rings/FitnessRings'
@@ -134,20 +135,20 @@ export default function Home() {
           type="button"
           onClick={handleNfcScan}
           disabled={scanning}
-          className="w-full min-h-[44px] mt-2 rounded-control border-[0.5px] border-border bg-input text-text-primary disabled:opacity-60"
+          className="w-full min-h-[44px] mt-2 rounded-control border-[0.5px] border-border bg-input text-text-primary disabled:opacity-60 flex items-center justify-center gap-2"
         >
-          {scanning ? 'Halte dein Handy an den Tag…' : '📶 NFC-Tag scannen'}
+          <Nfc size={18} strokeWidth={1.75} />
+          {scanning ? 'Halte dein Handy an den Tag…' : 'NFC-Tag scannen'}
         </button>
       )}
 
       {(feedingLogs.length > 0 || playLogs.length > 0 || notes.length > 0) && (
         <div className="flex flex-col gap-2 mt-4 mb-2">
           {feedingLogs.map((log) => (
-            <div
-              key={log.id}
-              className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
-            >
-              <span className="text-[13px] text-text-secondary">🍽️ {log.amount_g}g</span>
+            <div key={log.id} className="glass flex items-center justify-between px-3 py-2">
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <Utensils size={16} strokeWidth={1.75} /> {log.amount_g}g
+              </span>
               {canEdit && (
                 <button
                   type="button"
@@ -155,17 +156,16 @@ export default function Home() {
                   className="w-11 h-11 flex items-center justify-center text-muted-red"
                   aria-label="Eintrag löschen"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               )}
             </div>
           ))}
           {playLogs.map((log) => (
-            <div
-              key={log.id}
-              className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
-            >
-              <span className="text-[13px] text-text-secondary">🎾 {log.duration_min} min</span>
+            <div key={log.id} className="glass flex items-center justify-between px-3 py-2">
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <Volleyball size={16} strokeWidth={1.75} /> {log.duration_min} min
+              </span>
               {canEdit && (
                 <button
                   type="button"
@@ -173,17 +173,16 @@ export default function Home() {
                   className="w-11 h-11 flex items-center justify-center text-muted-red"
                   aria-label="Eintrag löschen"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               )}
             </div>
           ))}
           {notes.map((note) => (
-            <div
-              key={note.id}
-              className="flex items-center justify-between bg-card border-[0.5px] border-border rounded-card px-3 py-2"
-            >
-              <span className="text-[13px] text-text-secondary">📝 {note.text}</span>
+            <div key={note.id} className="glass flex items-center justify-between px-3 py-2">
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <NotebookPen size={16} strokeWidth={1.75} /> {note.text}
+              </span>
               {canEdit && (
                 <button
                   type="button"
@@ -191,7 +190,7 @@ export default function Home() {
                   className="w-11 h-11 flex items-center justify-center text-muted-red"
                   aria-label="Notiz löschen"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               )}
             </div>

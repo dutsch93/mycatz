@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { ampelColor } from '../shared/AmpelDot'
 import { toIsoDate, todayIso } from '../../lib/dates'
@@ -90,8 +91,11 @@ export default function MonthOverlay({ initialDate, catIds, foodTargetG, onSelec
   const today = todayIso()
 
   return (
-    <div className="fixed inset-0 bg-page z-50 flex flex-col px-4 py-4 overflow-y-auto">
-      <div className="relative flex items-center justify-center mb-4">
+    <div
+      className="fixed inset-0 z-50 flex flex-col px-4 py-4 overflow-y-auto"
+      style={{ background: 'var(--bg-page-gradient)' }}
+    >
+      <div className="glass relative flex items-center justify-center mb-4 p-3">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -99,7 +103,7 @@ export default function MonthOverlay({ initialDate, catIds, foodTargetG, onSelec
             className="w-11 h-11 flex items-center justify-center text-text-secondary"
             aria-label="Vorheriger Monat"
           >
-            ‹
+            <ChevronLeft size={20} strokeWidth={1.75} />
           </button>
           <h3 className="text-text-primary">{monthLabel}</h3>
           <button
@@ -108,52 +112,56 @@ export default function MonthOverlay({ initialDate, catIds, foodTargetG, onSelec
             className="w-11 h-11 flex items-center justify-center text-text-secondary"
             aria-label="Nächster Monat"
           >
-            ›
+            <ChevronRight size={20} strokeWidth={1.75} />
           </button>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-0 w-11 h-11 flex items-center justify-center text-text-secondary"
+          className="absolute right-2 w-11 h-11 flex items-center justify-center text-text-secondary"
           aria-label="Schließen"
         >
-          ✕
+          <X size={20} strokeWidth={1.75} />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-[13px] text-text-secondary mb-1">
-        {WEEKDAY_HEADERS.map((w) => (
-          <span key={w}>{w}</span>
-        ))}
-      </div>
+      <div className="glass p-3 flex flex-col gap-1">
+        <div className="grid grid-cols-7 gap-1 text-center text-[13px] text-text-secondary mb-1">
+          {WEEKDAY_HEADERS.map((w) => (
+            <span key={w}>{w}</span>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-7 gap-1">
-        {cells.map((date, i) => {
-          if (!date) return <div key={`empty-${i}`} />
-          const amount = amountsByDate[date] ?? 0
-          const percent = foodTargetG > 0 ? Math.round((amount / foodTargetG) * 100) : 0
-          const hasData = amount > 0
-          const isToday = date === today
-          return (
-            <button
-              key={date}
-              type="button"
-              onClick={() => {
-                onSelect(date)
-                onClose()
-              }}
-              className={`flex flex-col items-center justify-center gap-1 h-12 rounded-control ${
-                isToday ? 'bg-input' : ''
-              }`}
-            >
-              <span className="text-[13px] text-text-primary">{Number(date.split('-')[2])}</span>
-              <span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: hasData ? ampelColor(percent) : 'transparent' }}
-              />
-            </button>
-          )
-        })}
+        <div className="grid grid-cols-7 gap-1">
+          {cells.map((date, i) => {
+            if (!date) return <div key={`empty-${i}`} />
+            const amount = amountsByDate[date] ?? 0
+            const percent = foodTargetG > 0 ? Math.round((amount / foodTargetG) * 100) : 0
+            const hasData = amount > 0
+            const isToday = date === today
+            return (
+              <button
+                key={date}
+                type="button"
+                onClick={() => {
+                  onSelect(date)
+                  onClose()
+                }}
+                className={`flex flex-col items-center justify-center gap-1 h-12 rounded-control ${
+                  isToday ? 'bg-input' : ''
+                }`}
+              >
+                <span className="text-[13px] text-text-primary">
+                  {Number(date.split('-')[2])}
+                </span>
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: hasData ? ampelColor(percent) : 'transparent' }}
+                />
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       <p className="text-[13px] text-text-secondary text-center mt-4">

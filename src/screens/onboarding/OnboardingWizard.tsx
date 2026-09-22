@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { PawPrint } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import {
   createEmptyDraft,
@@ -8,6 +9,7 @@ import {
   type OnboardingDraft,
 } from '../../lib/onboardingDraft'
 import { DEFAULT_FOOD_TYPES, DEFAULT_HABITS } from '../../lib/defaults'
+import GlassCard from '../../components/shared/GlassCard'
 import StepHousehold from './StepHousehold'
 import StepCats from './StepCats'
 import StepFood from './StepFood'
@@ -74,9 +76,9 @@ export default function OnboardingWizard() {
 
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-page px-4 py-6 flex items-center">
-        <div className="max-w-app mx-auto text-center flex flex-col gap-4">
-          <div className="text-5xl">🐾</div>
+      <div className="min-h-screen px-4 py-6 flex items-center">
+        <GlassCard className="max-w-app mx-auto text-center flex flex-col gap-4 p-6">
+          <PawPrint size={40} strokeWidth={1.5} className="mx-auto text-apricot" />
           <h2>Willkommen bei MyCatz</h2>
           <p className="text-text-secondary">
             In wenigen Schritten richten wir euren Haushalt ein: eure Katze(n), Futterarten
@@ -89,16 +91,16 @@ export default function OnboardingWizard() {
           >
             Onboarding starten
           </button>
-        </div>
+        </GlassCard>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-page px-4 py-6">
+    <div className="min-h-screen px-4 py-6">
       <div className="max-w-app mx-auto">
         {/* Fortschrittsbalken: 4 Dots */}
-        <div className="flex items-center justify-center gap-2 mb-6">
+        <div className="glass flex items-center justify-center gap-2 mb-6 py-3 w-fit mx-auto px-4">
           {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((dot) => (
             <span
               key={dot}
@@ -109,10 +111,12 @@ export default function OnboardingWizard() {
           ))}
         </div>
 
-        {step === 1 && <StepHousehold draft={draft} onChange={setDraft} />}
-        {step === 2 && <StepCats draft={draft} onChange={setDraft} />}
-        {step === 3 && <StepFood draft={draft} onChange={setDraft} />}
-        {step === 4 && <StepHabits draft={draft} onChange={setDraft} />}
+        <GlassCard className="p-4">
+          {step === 1 && <StepHousehold draft={draft} onChange={setDraft} />}
+          {step === 2 && <StepCats draft={draft} onChange={setDraft} />}
+          {step === 3 && <StepFood draft={draft} onChange={setDraft} />}
+          {step === 4 && <StepHabits draft={draft} onChange={setDraft} />}
+        </GlassCard>
 
         {error && (
           <p className="mt-4 text-[13px] text-muted-red">{error}</p>

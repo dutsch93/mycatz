@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Utensils, Volleyball, Weight, NotebookPen } from 'lucide-react'
 import BottomSheet from '../shared/BottomSheet'
 import ChipGrid from '../shared/ChipGrid'
 import type { FoodType } from '../../types'
@@ -104,30 +105,30 @@ export default function FeedingQuickAdd({
           <button
             type="button"
             onClick={() => setMode('feeding')}
-            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left"
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left flex items-center gap-2"
           >
-            🍽️ Fütterung
+            <Utensils size={18} strokeWidth={1.75} /> Fütterung
           </button>
           <button
             type="button"
             onClick={() => setMode('play')}
-            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left"
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left flex items-center gap-2"
           >
-            🎾 Spielzeit
+            <Volleyball size={18} strokeWidth={1.75} /> Spielzeit
           </button>
           <button
             type="button"
             onClick={() => setMode('weight')}
-            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left"
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left flex items-center gap-2"
           >
-            ⚖️ Gewicht
+            <Weight size={18} strokeWidth={1.75} /> Gewicht
           </button>
           <button
             type="button"
             onClick={() => setMode('note')}
-            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left"
+            className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-left flex items-center gap-2"
           >
-            📝 Notiz
+            <NotebookPen size={18} strokeWidth={1.75} /> Notiz
           </button>
           <button
             type="button"

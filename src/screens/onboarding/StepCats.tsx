@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { X } from 'lucide-react'
 import { makeLocalId, type DraftCat, type OnboardingDraft } from '../../lib/onboardingDraft'
 
 interface Props {
@@ -75,7 +76,7 @@ export default function StepCats({ draft, onChange }: Props) {
                 className="w-11 h-11 flex items-center justify-center text-muted-red"
                 aria-label={`${cat.name} entfernen`}
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
           ))}

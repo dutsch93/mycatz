@@ -302,13 +302,13 @@ Formularen.
 den neuen Look. Formularlogik unverändert.
 
 **Acceptance criteria:**
-- [ ] Fortschrittsbalken/Dots im Glass-Stil
-- [ ] Alle 4 Schritt-Formulare nutzen `GlassCard` für Eingabebereiche
-- [ ] "Weiter"/"Zurück"-Navigation funktioniert unverändert
+- [x] Fortschrittsbalken/Dots im Glass-Stil
+- [x] Alle 4 Schritt-Formulare nutzen `GlassCard` für Eingabebereiche (gemeinsamer Wrapper in `OnboardingWizard.tsx`)
+- [x] "Weiter"/"Zurück"-Navigation funktioniert unverändert
 
 **Verification:**
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Kompletten Onboarding-Flow mit einem neuen Test-Account einmal durchklicken (Haushalt → Katze → Futter → Habits → Fertig)
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer bestätigt ("klappt alles")
 
 **Dependencies:** Task 9
 
@@ -330,13 +330,14 @@ den neuen Look. Formularlogik unverändert.
 sind hier nicht sinnvoll).
 
 **Acceptance criteria:**
-- [ ] `MonthOverlay` nutzt Glass-Hintergrund für das Overlay-Panel, Ampel-Dot-Logik unverändert
-- [ ] `BottomSheet` nutzt Glass-Look als Basis für Quick-Add und Habit-Detail-Eingaben (falls in Task 4 auf Bottom-Sheet umgestellt)
-- [ ] `FeedingQuickAdd` (Fütterung/Spielzeit/Gewicht/Notiz) nutzt Glass-Look, Chip-Grid der Futterarten bleibt funktional
+- [x] `MonthOverlay` nutzt Glass-Panel + Verlaufshintergrund, Ampel-Dot-Logik unverändert
+- [x] `BottomSheet` nutzt Glass-Look als Basis für Quick-Add
+- [x] `FeedingQuickAdd` (Fütterung/Spielzeit/Gewicht/Notiz) nutzt Lucide-Icons statt Emoji, Chip-Grid der Futterarten bleibt funktional
+- [x] Zusätzlich mit aufgeräumt: verbliebene Emoji in `Home.tsx` (Log-Liste, NFC-Button), `Shell.tsx` (NFC-Puls-Toast), `StepCats.tsx` (Entfernen-Button) auf Lucide umgestellt
 
 **Verification:**
-- [ ] Types/Lint: `npm run check:fast`
-- [ ] Manual check: Monatskalender öffnen und einen Tag auswählen, Quick-Add für alle 4 Typen (Fütterung/Spielzeit/Gewicht/Notiz) durchspielen
+- [x] Types/Lint: `npm run check:fast`
+- [x] Manual check: vom Nutzer bestätigt ("klappt alles")
 
 **Dependencies:** Task 10
 

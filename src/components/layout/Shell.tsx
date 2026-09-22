@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Nfc } from 'lucide-react'
 import Header from './Header'
 import BottomNav from './BottomNav'
 import FeedingQuickAdd from '../feeding/FeedingQuickAdd'
@@ -24,8 +25,8 @@ export default function Shell({ children }: { children: ReactNode }) {
       </div>
       <BottomNav />
       {nfcPulse && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[90%] px-4 py-2 rounded-control bg-apricot text-text-on-color text-[13px] text-center animate-pulse">
-          📶 {nfcPulse}
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[90%] px-4 py-2 rounded-control bg-apricot text-text-on-color text-[13px] text-center animate-pulse flex items-center gap-2">
+          <Nfc size={16} strokeWidth={1.75} /> {nfcPulse}
         </div>
       )}
       <FeedingQuickAdd
