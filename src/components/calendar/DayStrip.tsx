@@ -11,7 +11,7 @@ export default function DayStrip({
   const today = todayIso()
 
   return (
-    <div className="flex items-center justify-between gap-1 py-3">
+    <div className="glass flex items-center justify-between gap-1 px-2 py-3 mb-3">
       {days.map((day) => {
         const isSelected = day === selectedDate
         const isToday = day === today

@@ -17,7 +17,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   } = useAppData()
 
   return (
-    <div className="min-h-screen bg-page">
+    <div className="min-h-screen">
       <div className="max-w-app mx-auto">
         <Header />
         <main className="px-4 pb-24">{children}</main>
