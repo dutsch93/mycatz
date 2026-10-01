@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import type { Cat, CatGroup, FoodType, HabitDefinition, Household, Profile } from '../types'
+import type {
+  Cat,
+  CatGroup,
+  CatHabitExclusion,
+  FoodType,
+  HabitDefinition,
+  Household,
+  Profile,
+} from '../types'
 
 export interface CatGroupWithMembers extends CatGroup {
   catIds: string[]
@@ -13,6 +21,7 @@ interface HouseholdData {
   groups: CatGroupWithMembers[]
   foodTypes: FoodType[]
   habits: HabitDefinition[]
+  catHabitExclusions: CatHabitExclusion[]
   loading: boolean
   error: string | null
   refresh: () => void
@@ -25,6 +34,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
   const [groups, setGroups] = useState<CatGroupWithMembers[]>([])
   const [foodTypes, setFoodTypes] = useState<FoodType[]>([])
   const [habits, setHabits] = useState<HabitDefinition[]>([])
+  const [catHabitExclusions, setCatHabitExclusions] = useState<CatHabitExclusion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reloadCount, setReloadCount] = useState(0)
@@ -59,10 +69,11 @@ export function useHouseholdData(userId: string | null): HouseholdData {
           setGroups([])
           setFoodTypes([])
           setHabits([])
+          setCatHabitExclusions([])
           return
         }
 
-        const [householdRes, catsRes, groupsRes, membersRes, foodRes, habitsRes] =
+        const [householdRes, catsRes, groupsRes, membersRes, foodRes, habitsRes, exclusionsRes] =
           await Promise.all([
             supabase.from('households').select('*').eq('id', householdId).single(),
             supabase
@@ -83,6 +94,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
               .select('*')
               .eq('household_id', householdId)
               .order('sort_order'),
+            supabase.from('cat_habit_exclusions').select('*'),
           ])
 
         if (cancelled) return
@@ -92,6 +104,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         if (membersRes.error) throw membersRes.error
         if (foodRes.error) throw foodRes.error
         if (habitsRes.error) throw habitsRes.error
+        if (exclusionsRes.error) throw exclusionsRes.error
 
         const members = (membersRes.data ?? []) as { group_id: string; cat_id: string }[]
         const groupsWithMembers: CatGroupWithMembers[] = (groupsRes.data as CatGroup[]).map(
@@ -106,6 +119,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         setGroups(groupsWithMembers)
         setFoodTypes(foodRes.data as FoodType[])
         setHabits(habitsRes.data as HabitDefinition[])
+        setCatHabitExclusions(exclusionsRes.data as CatHabitExclusion[])
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Daten konnten nicht geladen werden.')
       } finally {
@@ -119,5 +133,16 @@ export function useHouseholdData(userId: string | null): HouseholdData {
     }
   }, [userId, reloadCount])
 
-  return { profile, household, cats, groups, foodTypes, habits, loading, error, refresh }
+  return {
+    profile,
+    household,
+    cats,
+    groups,
+    foodTypes,
+    habits,
+    catHabitExclusions,
+    loading,
+    error,
+    refresh,
+  }
 }

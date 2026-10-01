@@ -138,3 +138,9 @@ export interface Note {
   logged_at: string
   date: string
 }
+
+export interface CatHabitExclusion {
+  cat_id: string
+  habit_id: string
+  created_at: string
+}

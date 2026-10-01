@@ -30,13 +30,17 @@ aufweichen, nur um eine Änderung durchzubekommen.
 | Metrik                          | Stand 2026-09-22 | Richtung        |
 |----------------------------------|-------------------|-----------------|
 | Projekt-Coverage (Statements)    | 2.25%             | darf nicht sinken |
-| Bundle-Größe (JS, gzip)          | ~249 kB            | darf nicht wachsen |
+| Bundle-Größe (JS, gzip)          | ~252 kB            | darf nicht wachsen |
 
 Bundle-Größe am 2026-09-22 von ~241 kB auf ~249 kB angehoben: Liquid-
 Glass-Umbau hat `lucide-react` als neue Dependency eingeführt (viele
 einzeln importierte Icons über die App verteilt). Tree-Shaking greift
 bereits (kein Full-Bundle-Import), der Zuwachs ist der erwartete Preis
 für die Icon-Migration weg von Emoji.
+
+Bundle-Größe am 2026-10-01 von ~249 kB auf ~252 kB angehoben: Katzen-/
+Gruppen-Verwaltung + Habits-pro-Katze in Settings.tsx (neue
+Context-Funktionen, zwei zusätzliche Lucide-Icons).
 
 Die Projekt-Coverage ist niedrig, weil bisher nur reine Logik (`src/lib/`)
 getestet ist — UI-Screens/Hooks haben noch keine Tests. Das ist der

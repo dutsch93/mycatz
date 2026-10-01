@@ -21,6 +21,7 @@ export default function Home() {
     cats,
     groups,
     habits,
+    catHabitExclusions,
     target,
     setTarget,
     catIdsForTarget,
@@ -86,6 +87,15 @@ export default function Home() {
 
   const isToday = selectedDate === todayIso()
   const canEdit = profile?.role !== 'guest'
+
+  // Ein Habit ist sichtbar, wenn er für mindestens eine der Zielkatzen aktiv ist
+  // (nicht in cat_habit_exclusions eingetragen).
+  const visibleHabits = habits.filter((habit) =>
+    catIdsForTarget.some(
+      (catId) =>
+        !catHabitExclusions.some((ex) => ex.cat_id === catId && ex.habit_id === habit.id),
+    ),
+  )
 
   return (
     <div className="pb-6">
@@ -199,7 +209,7 @@ export default function Home() {
       )}
 
       <HabitList
-        habits={habits}
+        habits={visibleHabits}
         logs={habitLogs}
         onLog={(habitId, value, extra) => logHabit(habitId, value, extra)}
       />

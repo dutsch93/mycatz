@@ -9,7 +9,7 @@ import { useMembership } from '../hooks/useMembership'
 import { todayIso } from '../lib/dates'
 import { NFC_QUERY_PARAM } from '../lib/nfc'
 import { supabase } from '../lib/supabase'
-import type { FoodCategory, NfcTag } from '../types'
+import type { Cat, FoodCategory, HabitCategory, HabitType, NfcTag } from '../types'
 
 export type Target = { type: 'cat'; id: string } | { type: 'group'; id: string }
 
@@ -44,6 +44,29 @@ interface AppDataValue
   addFoodType: (name: string, category: FoodCategory, defaultPortionG: number) => Promise<void>
   updateFoodTypePortion: (id: string, defaultPortionG: number) => Promise<void>
   deleteFoodType: (id: string) => Promise<void>
+  addCat: (cat: {
+    name: string
+    age: string
+    breed: string
+    weightKg: number | null
+    tags: string[]
+    dailyFoodTargetG: number
+    dailyPlayTargetMin: number
+  }) => Promise<void>
+  updateCat: (id: string, patch: Partial<Pick<Cat, 'name' | 'age' | 'breed' | 'weight_kg' | 'tags' | 'daily_food_target_g' | 'daily_play_target_min'>>) => Promise<void>
+  archiveCat: (id: string) => Promise<void>
+  setCatHabitEnabled: (catId: string, habitId: string, enabled: boolean) => Promise<void>
+  addGroup: (name: string, catIds: string[]) => Promise<void>
+  renameGroup: (id: string, name: string) => Promise<void>
+  setGroupMembers: (id: string, catIds: string[]) => Promise<void>
+  deleteGroup: (id: string) => Promise<void>
+  addHabit: (habit: {
+    name: string
+    type: HabitType
+    options: string[]
+    category: HabitCategory
+  }) => Promise<void>
+  deleteHabit: (id: string) => Promise<void>
 }
 
 const AppDataContext = createContext<AppDataValue | null>(null)
@@ -117,6 +140,141 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     householdData.refresh()
   }
 
+  async function addCat(cat: {
+    name: string
+    age: string
+    breed: string
+    weightKg: number | null
+    tags: string[]
+    dailyFoodTargetG: number
+    dailyPlayTargetMin: number
+  }) {
+    const householdId = householdData.household?.id
+    if (!householdId) return
+    const { error } = await supabase.from('cats').insert({
+      household_id: householdId,
+      name: cat.name,
+      age: cat.age || null,
+      breed: cat.breed || null,
+      weight_kg: cat.weightKg,
+      tags: cat.tags,
+      daily_food_target_g: cat.dailyFoodTargetG,
+      daily_play_target_min: cat.dailyPlayTargetMin,
+    })
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function updateCat(
+    id: string,
+    patch: Partial<
+      Pick<
+        Cat,
+        'name' | 'age' | 'breed' | 'weight_kg' | 'tags' | 'daily_food_target_g' | 'daily_play_target_min'
+      >
+    >,
+  ) {
+    const { error } = await supabase.from('cats').update(patch).eq('id', id)
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function archiveCat(id: string) {
+    const { error } = await supabase.from('cats').update({ archived: true }).eq('id', id)
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function setCatHabitEnabled(catId: string, habitId: string, enabled: boolean) {
+    if (enabled) {
+      const { error } = await supabase
+        .from('cat_habit_exclusions')
+        .delete()
+        .eq('cat_id', catId)
+        .eq('habit_id', habitId)
+      if (error) throw new Error(error.message)
+    } else {
+      const { error } = await supabase
+        .from('cat_habit_exclusions')
+        .insert({ cat_id: catId, habit_id: habitId })
+      if (error) throw new Error(error.message)
+    }
+    householdData.refresh()
+  }
+
+  async function addGroup(name: string, catIds: string[]) {
+    const householdId = householdData.household?.id
+    if (!householdId) return
+    const { data, error } = await supabase
+      .from('cat_groups')
+      .insert({ household_id: householdId, name })
+      .select()
+      .single()
+    if (error) throw new Error(error.message)
+    const groupId = (data as { id: string }).id
+    if (catIds.length > 0) {
+      const { error: membersError } = await supabase
+        .from('cat_group_members')
+        .insert(catIds.map((catId) => ({ group_id: groupId, cat_id: catId })))
+      if (membersError) throw new Error(membersError.message)
+    }
+    householdData.refresh()
+  }
+
+  async function renameGroup(id: string, name: string) {
+    const { error } = await supabase.from('cat_groups').update({ name }).eq('id', id)
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function setGroupMembers(id: string, catIds: string[]) {
+    const { error: deleteError } = await supabase
+      .from('cat_group_members')
+      .delete()
+      .eq('group_id', id)
+    if (deleteError) throw new Error(deleteError.message)
+    if (catIds.length > 0) {
+      const { error: insertError } = await supabase
+        .from('cat_group_members')
+        .insert(catIds.map((catId) => ({ group_id: id, cat_id: catId })))
+      if (insertError) throw new Error(insertError.message)
+    }
+    householdData.refresh()
+  }
+
+  async function deleteGroup(id: string) {
+    const { error } = await supabase.from('cat_groups').delete().eq('id', id)
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function addHabit(habit: {
+    name: string
+    type: HabitType
+    options: string[]
+    category: HabitCategory
+  }) {
+    const householdId = householdData.household?.id
+    if (!householdId) return
+    const { error } = await supabase.from('habit_definitions').insert({
+      household_id: householdId,
+      name: habit.name,
+      type: habit.type,
+      options: habit.type === 'select' ? habit.options : null,
+      category: habit.category,
+      is_default: true,
+      sort_order: householdData.habits.length,
+    })
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function deleteHabit(id: string) {
+    const { error } = await supabase.from('habit_definitions').delete().eq('id', id)
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
   // iOS-Shortcut-Fallback: öffnet die App mit ?nfc=TAG_ID statt Web NFC zu nutzen.
   useEffect(() => {
     const tagId = searchParams.get(NFC_QUERY_PARAM)
@@ -182,6 +340,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         addFoodType,
         updateFoodTypePortion,
         deleteFoodType,
+        addCat,
+        updateCat,
+        archiveCat,
+        setCatHabitEnabled,
+        addGroup,
+        renameGroup,
+        setGroupMembers,
+        deleteGroup,
+        addHabit,
+        deleteHabit,
       }}
     >
       {children}
