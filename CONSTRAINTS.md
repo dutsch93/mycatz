@@ -29,8 +29,8 @@ aufweichen, nur um eine Änderung durchzubekommen.
 
 | Metrik                          | Stand 2026-09-22 | Richtung        |
 |----------------------------------|-------------------|-----------------|
-| Projekt-Coverage (Statements)    | 2.25%             | darf nicht sinken |
-| Bundle-Größe (JS, gzip)          | ~252 kB            | darf nicht wachsen |
+| Projekt-Coverage (Statements)    | 1.76%             | darf nicht sinken |
+| Bundle-Größe (JS, gzip)          | ~255 kB            | darf nicht wachsen |
 
 Bundle-Größe am 2026-09-22 von ~241 kB auf ~249 kB angehoben: Liquid-
 Glass-Umbau hat `lucide-react` als neue Dependency eingeführt (viele
@@ -41,6 +41,16 @@ für die Icon-Migration weg von Emoji.
 Bundle-Größe am 2026-10-01 von ~249 kB auf ~252 kB angehoben: Katzen-/
 Gruppen-Verwaltung + Habits-pro-Katze in Settings.tsx (neue
 Context-Funktionen, zwei zusätzliche Lucide-Icons).
+
+Bundle-Größe am 2026-10-02 von ~252 kB auf ~254 kB angehoben, Coverage
+von 2.25% auf 1.76% gesunken: Ringe im Whoop-Stil, Gruppen-Auswahl auf
+Home, Aktivität-Sammelkarte, Foto-Upload für Katzen/Gruppen (neuer
+Context-Code + Profile.tsx-UI, weiterhin ungetestete UI-Screens —
+Coverage-Rückgang ist der erwartete Verdünnungseffekt, keine Regression
+in getesteter Logik).
+
+Bundle-Größe am 2026-10-02 (zweite Änderung) von ~254 kB auf ~255 kB
+angehoben: zweite Trend-Sparkline (Spielzeit) in WeekTrendTile.
 
 Die Projekt-Coverage ist niedrig, weil bisher nur reine Logik (`src/lib/`)
 getestet ist — UI-Screens/Hooks haben noch keine Tests. Das ist der

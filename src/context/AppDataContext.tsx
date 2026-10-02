@@ -55,6 +55,8 @@ interface AppDataValue
   }) => Promise<void>
   updateCat: (id: string, patch: Partial<Pick<Cat, 'name' | 'age' | 'breed' | 'weight_kg' | 'tags' | 'daily_food_target_g' | 'daily_play_target_min'>>) => Promise<void>
   archiveCat: (id: string) => Promise<void>
+  uploadCatPhoto: (id: string, file: File) => Promise<void>
+  uploadGroupPhoto: (id: string, file: File) => Promise<void>
   setCatHabitEnabled: (catId: string, habitId: string, enabled: boolean) => Promise<void>
   addGroup: (name: string, catIds: string[]) => Promise<void>
   renameGroup: (id: string, name: string) => Promise<void>
@@ -275,6 +277,38 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     householdData.refresh()
   }
 
+  // Lädt ein rundes Profilbild in den 'cat-photos'-Bucket hoch (Pfad-Präfix = household_id,
+  // per Storage-RLS gegen my_household_id() geprüft) und hängt die öffentliche URL an die
+  // Katze bzw. Gruppe.
+  async function uploadPhoto(
+    table: 'cats' | 'cat_groups',
+    kind: 'cat' | 'group',
+    id: string,
+    file: File,
+  ) {
+    const householdId = householdData.household?.id
+    if (!householdId) return
+    const ext = file.name.split('.').pop() || 'jpg'
+    const path = `${householdId}/${kind}-${id}-${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage.from('cat-photos').upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+    if (uploadError) throw new Error(uploadError.message)
+    const { data } = supabase.storage.from('cat-photos').getPublicUrl(path)
+    const { error } = await supabase.from(table).update({ photo_url: data.publicUrl }).eq('id', id)
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function uploadCatPhoto(id: string, file: File) {
+    await uploadPhoto('cats', 'cat', id, file)
+  }
+
+  async function uploadGroupPhoto(id: string, file: File) {
+    await uploadPhoto('cat_groups', 'group', id, file)
+  }
+
   // iOS-Shortcut-Fallback: öffnet die App mit ?nfc=TAG_ID statt Web NFC zu nutzen.
   useEffect(() => {
     const tagId = searchParams.get(NFC_QUERY_PARAM)
@@ -343,6 +377,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         addCat,
         updateCat,
         archiveCat,
+        uploadCatPhoto,
+        uploadGroupPhoto,
         setCatHabitEnabled,
         addGroup,
         renameGroup,

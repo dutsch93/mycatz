@@ -34,11 +34,9 @@ export default function HabitList({ habits, logs, onLog }: Props) {
   }
 
   return (
-    <div>
-      <h3 className="text-[13px] text-text-secondary uppercase tracking-wide mb-2">
-        Daily Habits
-      </h3>
-      <GlassCard className="px-3">
+    <GlassCard className="px-3 pt-3 mt-3">
+      <p className="text-[13px] text-text-secondary mb-1">Tagebuch</p>
+      <div>
         {habits.map((habit) => {
           const { log, mixed } = resolveHabitLog(logs, habit.id)
           return (
@@ -51,7 +49,7 @@ export default function HabitList({ habits, logs, onLog }: Props) {
             />
           )
         })}
-      </GlassCard>
-    </div>
+      </div>
+    </GlassCard>
   )
 }

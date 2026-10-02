@@ -145,6 +145,21 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
     refresh()
   }
 
+  async function updateFeedingLog(id: string, amountG: number) {
+    const { error } = await supabase.from('feeding_logs').update({ amount_g: amountG }).eq('id', id)
+    if (error) throw new Error(error.message)
+    refresh()
+  }
+
+  async function updatePlayLog(id: string, durationMin: number) {
+    const { error } = await supabase
+      .from('play_logs')
+      .update({ duration_min: durationMin })
+      .eq('id', id)
+    if (error) throw new Error(error.message)
+    refresh()
+  }
+
   return {
     feedingLogs,
     playLogs,
@@ -159,6 +174,8 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
     logNote,
     deleteFeedingLog,
     deletePlayLog,
+    updateFeedingLog,
+    updatePlayLog,
     deleteNote,
   }
 }

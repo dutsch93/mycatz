@@ -1,8 +1,53 @@
-import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, Users, X } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Camera, Check, ChevronDown, ChevronUp, Users, X } from 'lucide-react'
 import { useAppData } from '../context/AppDataContext'
 import { CAT_BREEDS, CAT_TAG_SUGGESTIONS } from '../lib/catOptions'
 import GlassCard from '../components/shared/GlassCard'
+
+// Rundes Profilbild mit Upload-Overlay — für Katzen und Gruppen gleich genutzt.
+function PhotoPicker({
+  photoUrl,
+  label,
+  onPick,
+  fallback,
+}: {
+  photoUrl: string | null
+  label: string
+  onPick: (file: File) => void
+  fallback: React.ReactNode
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="relative w-14 h-14 shrink-0 rounded-full bg-input overflow-hidden flex items-center justify-center text-text-secondary"
+        aria-label={`Profilbild für ${label} ändern`}
+      >
+        {photoUrl ? (
+          <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+        ) : (
+          fallback
+        )}
+        <span className="absolute inset-0 bg-black/25 opacity-0 active:opacity-100 flex items-center justify-center transition-opacity">
+          <Camera size={16} className="text-white" />
+        </span>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) onPick(file)
+          e.target.value = ''
+        }}
+      />
+    </>
+  )
+}
 
 export default function Profile() {
   const {
@@ -11,6 +56,8 @@ export default function Profile() {
     addCat,
     updateCat,
     archiveCat,
+    uploadCatPhoto,
+    uploadGroupPhoto,
     habits,
     catHabitExclusions,
     setCatHabitEnabled,
@@ -94,6 +141,24 @@ export default function Profile() {
     setErrorMsg(null)
     try {
       await updateCat(id, patch)
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
+  }
+
+  async function handleUploadCatPhoto(id: string, file: File) {
+    setErrorMsg(null)
+    try {
+      await uploadCatPhoto(id, file)
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
+  }
+
+  async function handleUploadGroupPhoto(id: string, file: File) {
+    setErrorMsg(null)
+    try {
+      await uploadGroupPhoto(id, file)
     } catch (err) {
       setErrorMsg(friendlyError(err))
     }
@@ -255,13 +320,31 @@ export default function Profile() {
           <div className="flex flex-col gap-2">
             {cats.map((cat) => (
               <div key={cat.id} className="glass flex flex-col gap-2 px-3 py-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-text-primary">{cat.name}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {isOwner ? (
+                      <PhotoPicker
+                        photoUrl={cat.photo_url}
+                        label={cat.name}
+                        onPick={(file) => handleUploadCatPhoto(cat.id, file)}
+                        fallback={<span className="text-[18px]">{cat.name[0]?.toUpperCase()}</span>}
+                      />
+                    ) : (
+                      <span className="w-14 h-14 shrink-0 rounded-full bg-input overflow-hidden flex items-center justify-center text-text-secondary">
+                        {cat.photo_url ? (
+                          <img src={cat.photo_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[18px]">{cat.name[0]?.toUpperCase()}</span>
+                        )}
+                      </span>
+                    )}
+                    <p className="text-text-primary truncate">{cat.name}</p>
+                  </div>
                   {isOwner && (
                     <button
                       type="button"
                       onClick={() => handleArchiveCat(cat.id)}
-                      className="w-11 h-11 flex items-center justify-center text-muted-red"
+                      className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red"
                       aria-label={`${cat.name} archivieren`}
                     >
                       <X size={16} />
@@ -573,25 +656,43 @@ export default function Profile() {
           <div className="flex flex-col gap-2">
             {groups.map((group) => (
               <div key={group.id} className="glass flex flex-col gap-2 px-3 py-3">
-                <div className="flex items-center justify-between">
-                  {isOwner ? (
-                    <input
-                      type="text"
-                      defaultValue={group.name}
-                      onBlur={(e) => {
-                        const value = e.target.value.trim()
-                        if (value && value !== group.name) handleRenameGroup(group.id, value)
-                      }}
-                      className="flex-1 min-w-0 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-                    />
-                  ) : (
-                    <p className="text-text-primary">{group.name}</p>
-                  )}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {isOwner ? (
+                      <PhotoPicker
+                        photoUrl={group.photo_url}
+                        label={group.name}
+                        onPick={(file) => handleUploadGroupPhoto(group.id, file)}
+                        fallback={<Users size={20} strokeWidth={1.75} />}
+                      />
+                    ) : (
+                      <span className="w-14 h-14 shrink-0 rounded-full bg-input overflow-hidden flex items-center justify-center text-text-secondary">
+                        {group.photo_url ? (
+                          <img src={group.photo_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <Users size={20} strokeWidth={1.75} />
+                        )}
+                      </span>
+                    )}
+                    {isOwner ? (
+                      <input
+                        type="text"
+                        defaultValue={group.name}
+                        onBlur={(e) => {
+                          const value = e.target.value.trim()
+                          if (value && value !== group.name) handleRenameGroup(group.id, value)
+                        }}
+                        className="flex-1 min-w-0 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
+                      />
+                    ) : (
+                      <p className="text-text-primary truncate">{group.name}</p>
+                    )}
+                  </div>
                   {isOwner && (
                     <button
                       type="button"
                       onClick={() => handleDeleteGroup(group.id)}
-                      className="w-11 h-11 flex items-center justify-center text-muted-red"
+                      className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red"
                       aria-label={`${group.name} löschen`}
                     >
                       <X size={16} />
