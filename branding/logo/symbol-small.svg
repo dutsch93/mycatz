@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>MyCatz Symbol (Small-Size Cut)</title>
+  <path fill="#E8A87C" d="M56,20 L34,118 L98,98 Z"/>
+  <path fill="#E8A87C" d="M200,20 L158,98 L222,118 Z"/>
+  <circle cx="128" cy="150" r="76" fill="#E8A87C"/>
+  <circle cx="128" cy="150" r="34" fill="#85B79D"/>
+</svg>

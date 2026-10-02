@@ -1,0 +1,9 @@
+<svg fill="#1c1c1e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><title>MyCatz Logo</title>
+  
+  <path fill="#1c1c1e" d="M60,24 L38,120 L96,100 Z"/>
+  <path fill="#1c1c1e" d="M196,24 L160,100 L218,120 Z"/>
+  <path fill="#1c1c1e" fill-rule="evenodd" d="M204,150 A76,76 0 1,0 52,150 A76,76 0 1,0 204,150 Z
+    M186,150 A58,58 0 1,0 70,150 A58,58 0 1,0 186,150 Z"/>
+  <path fill="#1c1c1e" fill-rule="evenodd" d="M178,150 A50,50 0 1,0 78,150 A50,50 0 1,0 178,150 Z
+    M158,150 A30,30 0 1,0 98,150 A30,30 0 1,0 158,150 Z"/>
+</svg>
