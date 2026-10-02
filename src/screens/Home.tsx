@@ -10,7 +10,6 @@ import FitnessRings from '../components/rings/FitnessRings'
 import HabitList from '../components/habits/HabitList'
 import GlassCard from '../components/shared/GlassCard'
 import WeekTrendTile from '../components/shared/WeekTrendTile'
-import MultiCatTile from '../components/shared/MultiCatTile'
 import type { FeedingLog, PlayLog } from '../types'
 
 type ActivityEntry = { kind: 'feeding'; log: FeedingLog } | { kind: 'play'; log: PlayLog }
@@ -86,11 +85,9 @@ export default function Home() {
     loading,
     profile,
     cats,
-    groups,
     habits,
     catHabitExclusions,
     target,
-    setTarget,
     catIdsForTarget,
     selectedDate,
     setSelectedDate,
@@ -212,13 +209,6 @@ export default function Home() {
       </GlassCard>
 
       <WeekTrendTile catIds={catIdsForTarget} />
-      <MultiCatTile
-        cats={cats}
-        groups={groups}
-        date={selectedDate}
-        target={target}
-        onSelect={setTarget}
-      />
 
       {isWebNfcSupported() && (
         <button

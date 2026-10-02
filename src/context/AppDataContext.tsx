@@ -339,7 +339,13 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         // ignorieren, Fallback unten
       }
     }
-    setTargetState({ type: 'cat', id: householdData.cats[0].id })
+    // Gruppe hat Vorrang vor Einzelkatze, wenn beides existiert und keine Auswahl
+    // gespeichert ist.
+    if (householdData.groups.length > 0) {
+      setTargetState({ type: 'group', id: householdData.groups[0].id })
+    } else {
+      setTargetState({ type: 'cat', id: householdData.cats[0].id })
+    }
   }, [target, householdData.cats, householdData.groups])
 
   function setTarget(t: Target) {
