@@ -122,18 +122,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const supabase = createClient(
-    process.env.VITE_SUPABASE_URL as string,
-    process.env.SUPABASE_SERVICE_ROLE_KEY as string,
-  )
-
-  webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT as string,
-    process.env.VITE_VAPID_PUBLIC_KEY as string,
-    process.env.VAPID_PRIVATE_KEY as string,
-  )
+  // Fehlende Umgebungsvariablen beim Namen nennen (nie die Werte), damit eine
+  // Fehlkonfiguration in Vercel sofort erkennbar ist statt eines stummen Absturzes.
+  const requiredEnv = [
+    'VITE_SUPABASE_URL',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'VAPID_SUBJECT',
+    'VITE_VAPID_PUBLIC_KEY',
+    'VAPID_PRIVATE_KEY',
+  ]
+  const missing = requiredEnv.filter((name) => !process.env[name])
+  if (missing.length > 0) {
+    res.status(500).json({ error: `Fehlende Umgebungsvariablen: ${missing.join(', ')}` })
+    return
+  }
 
   try {
+    const supabase = createClient(
+      process.env.VITE_SUPABASE_URL as string,
+      process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+    )
+
+    webpush.setVapidDetails(
+      process.env.VAPID_SUBJECT as string,
+      process.env.VITE_VAPID_PUBLIC_KEY as string,
+      process.env.VAPID_PRIVATE_KEY as string,
+    )
+
     const result = await resolveReminders(supabase, new Date(), (subscription, payload) =>
       webpush.sendNotification(subscription, payload).then(() => undefined),
     )
