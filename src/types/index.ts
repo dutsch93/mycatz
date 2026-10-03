@@ -144,3 +144,10 @@ export interface CatHabitExclusion {
   habit_id: string
   created_at: string
 }
+
+export interface HouseholdReminderSettings {
+  household_id: string
+  enabled: boolean
+  times: string[]
+  updated_at: string
+}
