@@ -57,6 +57,9 @@ interface AppDataValue
   archiveCat: (id: string) => Promise<void>
   uploadCatPhoto: (id: string, file: File) => Promise<void>
   uploadGroupPhoto: (id: string, file: File) => Promise<void>
+  updateReminderSettings: (enabled: boolean, times: string[]) => Promise<void>
+  registerPushSubscription: (sub: { endpoint: string; p256dh: string; auth: string }) => Promise<void>
+  removePushSubscription: (endpoint: string) => Promise<void>
   setCatHabitEnabled: (catId: string, habitId: string, enabled: boolean) => Promise<void>
   addGroup: (name: string, catIds: string[]) => Promise<void>
   renameGroup: (id: string, name: string) => Promise<void>
@@ -309,6 +312,38 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     await uploadPhoto('cat_groups', 'group', id, file)
   }
 
+  async function updateReminderSettings(enabled: boolean, times: string[]) {
+    const householdId = householdData.household?.id
+    if (!householdId) return
+    const { error } = await supabase
+      .from('household_reminder_settings')
+      .upsert({ household_id: householdId, enabled, times }, { onConflict: 'household_id' })
+    if (error) throw new Error(error.message)
+    householdData.refresh()
+  }
+
+  async function registerPushSubscription(sub: { endpoint: string; p256dh: string; auth: string }) {
+    const householdId = householdData.household?.id
+    const profileId = householdData.profile?.id
+    if (!householdId || !profileId) return
+    const { error } = await supabase.from('push_subscriptions').upsert(
+      {
+        profile_id: profileId,
+        household_id: householdId,
+        endpoint: sub.endpoint,
+        p256dh: sub.p256dh,
+        auth: sub.auth,
+      },
+      { onConflict: 'endpoint' },
+    )
+    if (error) throw new Error(error.message)
+  }
+
+  async function removePushSubscription(endpoint: string) {
+    const { error } = await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint)
+    if (error) throw new Error(error.message)
+  }
+
   // iOS-Shortcut-Fallback: öffnet die App mit ?nfc=TAG_ID statt Web NFC zu nutzen.
   useEffect(() => {
     const tagId = searchParams.get(NFC_QUERY_PARAM)
@@ -385,6 +420,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         archiveCat,
         uploadCatPhoto,
         uploadGroupPhoto,
+        updateReminderSettings,
+        registerPushSubscription,
+        removePushSubscription,
         setCatHabitEnabled,
         addGroup,
         renameGroup,
