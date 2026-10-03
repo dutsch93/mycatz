@@ -6,5 +6,7 @@
     M186,150 A58,58 0 1,0 70,150 A58,58 0 1,0 186,150 Z"/>
   <path fill="#85B79D" fill-rule="evenodd" d="M178,150 A50,50 0 1,0 78,150 A50,50 0 1,0 178,150 Z
     M158,150 A30,30 0 1,0 98,150 A30,30 0 1,0 158,150 Z"/>
+  <path fill="none" stroke="#E8A87C" stroke-width="15" stroke-linecap="round"
+    d="M176,206 C198,214 218,203 219,184 C219,174 213,168 204,170"/>
   <text x="248" y="150" font-family="Inter, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="76" fill="#1C1C1E">MyCatz</text>
 </svg>
