@@ -7,6 +7,7 @@ import type {
   FoodType,
   HabitDefinition,
   Household,
+  HouseholdReminderSettings,
   Profile,
 } from '../types'
 
@@ -22,6 +23,7 @@ interface HouseholdData {
   foodTypes: FoodType[]
   habits: HabitDefinition[]
   catHabitExclusions: CatHabitExclusion[]
+  reminderSettings: HouseholdReminderSettings | null
   loading: boolean
   error: string | null
   refresh: () => void
@@ -35,6 +37,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
   const [foodTypes, setFoodTypes] = useState<FoodType[]>([])
   const [habits, setHabits] = useState<HabitDefinition[]>([])
   const [catHabitExclusions, setCatHabitExclusions] = useState<CatHabitExclusion[]>([])
+  const [reminderSettings, setReminderSettings] = useState<HouseholdReminderSettings | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reloadCount, setReloadCount] = useState(0)
@@ -70,32 +73,46 @@ export function useHouseholdData(userId: string | null): HouseholdData {
           setFoodTypes([])
           setHabits([])
           setCatHabitExclusions([])
+          setReminderSettings(null)
           return
         }
 
-        const [householdRes, catsRes, groupsRes, membersRes, foodRes, habitsRes, exclusionsRes] =
-          await Promise.all([
-            supabase.from('households').select('*').eq('id', householdId).single(),
-            supabase
-              .from('cats')
-              .select('*')
-              .eq('household_id', householdId)
-              .eq('archived', false)
-              .order('created_at'),
-            supabase.from('cat_groups').select('*').eq('household_id', householdId),
-            supabase.from('cat_group_members').select('group_id, cat_id'),
-            supabase
-              .from('food_types')
-              .select('*')
-              .eq('household_id', householdId)
-              .order('sort_order'),
-            supabase
-              .from('habit_definitions')
-              .select('*')
-              .eq('household_id', householdId)
-              .order('sort_order'),
-            supabase.from('cat_habit_exclusions').select('*'),
-          ])
+        const [
+          householdRes,
+          catsRes,
+          groupsRes,
+          membersRes,
+          foodRes,
+          habitsRes,
+          exclusionsRes,
+          reminderSettingsRes,
+        ] = await Promise.all([
+          supabase.from('households').select('*').eq('id', householdId).single(),
+          supabase
+            .from('cats')
+            .select('*')
+            .eq('household_id', householdId)
+            .eq('archived', false)
+            .order('created_at'),
+          supabase.from('cat_groups').select('*').eq('household_id', householdId),
+          supabase.from('cat_group_members').select('group_id, cat_id'),
+          supabase
+            .from('food_types')
+            .select('*')
+            .eq('household_id', householdId)
+            .order('sort_order'),
+          supabase
+            .from('habit_definitions')
+            .select('*')
+            .eq('household_id', householdId)
+            .order('sort_order'),
+          supabase.from('cat_habit_exclusions').select('*'),
+          supabase
+            .from('household_reminder_settings')
+            .select('*')
+            .eq('household_id', householdId)
+            .maybeSingle(),
+        ])
 
         if (cancelled) return
         if (householdRes.error) throw householdRes.error
@@ -105,6 +122,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         if (foodRes.error) throw foodRes.error
         if (habitsRes.error) throw habitsRes.error
         if (exclusionsRes.error) throw exclusionsRes.error
+        if (reminderSettingsRes.error) throw reminderSettingsRes.error
 
         const members = (membersRes.data ?? []) as { group_id: string; cat_id: string }[]
         const groupsWithMembers: CatGroupWithMembers[] = (groupsRes.data as CatGroup[]).map(
@@ -120,6 +138,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         setFoodTypes(foodRes.data as FoodType[])
         setHabits(habitsRes.data as HabitDefinition[])
         setCatHabitExclusions(exclusionsRes.data as CatHabitExclusion[])
+        setReminderSettings(reminderSettingsRes.data as HouseholdReminderSettings | null)
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Daten konnten nicht geladen werden.')
       } finally {
@@ -141,6 +160,7 @@ export function useHouseholdData(userId: string | null): HouseholdData {
     foodTypes,
     habits,
     catHabitExclusions,
+    reminderSettings,
     loading,
     error,
     refresh,
