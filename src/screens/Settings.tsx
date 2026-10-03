@@ -1,7 +1,13 @@
-import { useState } from 'react'
-import { X, Nfc } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { X, Nfc, Bell } from 'lucide-react'
 import { useAppData } from '../context/AppDataContext'
 import { buildNfcShortcutUrl, isWebNfcSupported, scanNfcTag } from '../lib/nfc'
+import {
+  getCurrentSubscription,
+  isPushSupported,
+  subscribeBrowser,
+  unsubscribeBrowser,
+} from '../lib/pushNotifications'
 import { supabase } from '../lib/supabase'
 import type { FoodCategory, HabitCategory, HabitType } from '../types'
 
@@ -47,6 +53,10 @@ export default function Settings() {
     cancelInvite,
     createGuestLink,
     revokeGuestLink,
+    reminderSettings,
+    updateReminderSettings,
+    registerPushSubscription,
+    removePushSubscription,
   } = useAppData()
 
   const [newHabitName, setNewHabitName] = useState('')
@@ -67,6 +77,63 @@ export default function Settings() {
 
   const [inviteEmail, setInviteEmail] = useState('')
   const [guestLinkLabel, setGuestLinkLabel] = useState('')
+
+  const [deviceSubscribed, setDeviceSubscribed] = useState(false)
+  const [devicePushBusy, setDevicePushBusy] = useState(false)
+  const [reminderTimesInput, setReminderTimesInput] = useState(
+    (reminderSettings?.times ?? ['08:00', '18:00']).join(', '),
+  )
+  const [reminderEnabledInput, setReminderEnabledInput] = useState(reminderSettings?.enabled ?? false)
+
+  useEffect(() => {
+    let cancelled = false
+    getCurrentSubscription().then((sub) => {
+      if (!cancelled) setDeviceSubscribed(sub !== null)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    setReminderTimesInput((reminderSettings?.times ?? ['08:00', '18:00']).join(', '))
+    setReminderEnabledInput(reminderSettings?.enabled ?? false)
+  }, [reminderSettings])
+
+  async function handleToggleDevicePush() {
+    setErrorMsg(null)
+    setDevicePushBusy(true)
+    try {
+      if (deviceSubscribed) {
+        const sub = await getCurrentSubscription()
+        await unsubscribeBrowser()
+        if (sub) await removePushSubscription(sub.endpoint)
+        setDeviceSubscribed(false)
+      } else {
+        const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string
+        const sub = await subscribeBrowser(vapidPublicKey)
+        await registerPushSubscription(sub)
+        setDeviceSubscribed(true)
+      }
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    } finally {
+      setDevicePushBusy(false)
+    }
+  }
+
+  async function handleSaveReminderSettings() {
+    setErrorMsg(null)
+    const times = reminderTimesInput
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+    try {
+      await updateReminderSettings(reminderEnabledInput, times)
+    } catch (err) {
+      setErrorMsg(friendlyError(err))
+    }
+  }
 
   // Wandelt v.a. FK-Constraint-Fehler ("wird noch benutzt") in eine verständliche
   // Meldung um, statt den rohen Postgres-Fehler stumm verschwinden zu lassen.
@@ -236,6 +303,63 @@ export default function Settings() {
           <p className="text-text-primary">{household.name}</p>
         </section>
       )}
+
+      <section className="flex flex-col gap-3">
+        <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
+          Erinnerungen
+        </h3>
+
+        <div className="glass flex items-center justify-between px-3 py-3">
+          <div className="flex items-center gap-2">
+            <Bell size={18} strokeWidth={1.75} className="text-text-secondary" />
+            <span className="text-text-primary">Push auf diesem Gerät</span>
+          </div>
+          {isPushSupported() ? (
+            <button
+              type="button"
+              onClick={handleToggleDevicePush}
+              disabled={devicePushBusy}
+              className={`min-h-[40px] px-4 rounded-control disabled:opacity-60 ${
+                deviceSubscribed
+                  ? 'bg-input text-text-primary'
+                  : 'bg-apricot text-text-on-color'
+              }`}
+            >
+              {deviceSubscribed ? 'Deaktivieren' : 'Aktivieren'}
+            </button>
+          ) : (
+            <span className="text-[13px] text-text-secondary">Nicht unterstützt</span>
+          )}
+        </div>
+
+        {isOwner && (
+          <div className="glass p-3 flex flex-col gap-3">
+            <label className="flex items-center justify-between min-h-[40px]">
+              <span className="text-text-primary">Haushalts-Erinnerung aktiv</span>
+              <input
+                type="checkbox"
+                checked={reminderEnabledInput}
+                onChange={(e) => setReminderEnabledInput(e.target.checked)}
+                className="w-5 h-5"
+              />
+            </label>
+            <input
+              type="text"
+              value={reminderTimesInput}
+              onChange={(e) => setReminderTimesInput(e.target.value)}
+              placeholder="Uhrzeiten, mit Komma getrennt (z. B. 08:00, 18:00)"
+              className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
+            />
+            <button
+              type="button"
+              onClick={handleSaveReminderSettings}
+              className="min-h-[44px] rounded-control bg-apricot text-text-on-color"
+            >
+              Erinnerungen speichern
+            </button>
+          </div>
+        )}
+      </section>
 
       <section className="flex flex-col gap-3">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
