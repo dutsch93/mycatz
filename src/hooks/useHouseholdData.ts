@@ -122,7 +122,11 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         if (foodRes.error) throw foodRes.error
         if (habitsRes.error) throw habitsRes.error
         if (exclusionsRes.error) throw exclusionsRes.error
-        if (reminderSettingsRes.error) throw reminderSettingsRes.error
+        // Erinnerungen sind optional: Fehlt z. B. Migration 008 noch, soll der Rest
+        // der App trotzdem laden – nur ohne Erinnerungs-Einstellungen.
+        if (reminderSettingsRes.error) {
+          console.warn('Erinnerungs-Einstellungen nicht geladen:', reminderSettingsRes.error.message)
+        }
 
         const members = (membersRes.data ?? []) as { group_id: string; cat_id: string }[]
         const groupsWithMembers: CatGroupWithMembers[] = (groupsRes.data as CatGroup[]).map(
@@ -138,7 +142,11 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         setFoodTypes(foodRes.data as FoodType[])
         setHabits(habitsRes.data as HabitDefinition[])
         setCatHabitExclusions(exclusionsRes.data as CatHabitExclusion[])
-        setReminderSettings(reminderSettingsRes.data as HouseholdReminderSettings | null)
+        setReminderSettings(
+          reminderSettingsRes.error
+            ? null
+            : (reminderSettingsRes.data as HouseholdReminderSettings | null),
+        )
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Daten konnten nicht geladen werden.')
       } finally {

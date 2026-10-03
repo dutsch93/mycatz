@@ -19,7 +19,8 @@ CREATE POLICY "push_subscriptions_own_select" ON push_subscriptions
 CREATE POLICY "push_subscriptions_own_insert" ON push_subscriptions
   FOR INSERT WITH CHECK (profile_id = auth.uid() AND household_id = my_household_id());
 CREATE POLICY "push_subscriptions_own_update" ON push_subscriptions
-  FOR UPDATE USING (profile_id = auth.uid());
+  FOR UPDATE USING (profile_id = auth.uid())
+  WITH CHECK (profile_id = auth.uid() AND household_id = my_household_id());
 CREATE POLICY "push_subscriptions_own_delete" ON push_subscriptions
   FOR DELETE USING (profile_id = auth.uid());
 
@@ -40,7 +41,8 @@ CREATE POLICY "reminder_settings_select" ON household_reminder_settings
 CREATE POLICY "reminder_settings_insert" ON household_reminder_settings
   FOR INSERT WITH CHECK (household_id = my_household_id() AND my_role() = 'owner');
 CREATE POLICY "reminder_settings_update" ON household_reminder_settings
-  FOR UPDATE USING (household_id = my_household_id() AND my_role() = 'owner');
+  FOR UPDATE USING (household_id = my_household_id() AND my_role() = 'owner')
+  WITH CHECK (household_id = my_household_id() AND my_role() = 'owner');
 
 GRANT SELECT, INSERT, UPDATE ON household_reminder_settings TO authenticated;
 

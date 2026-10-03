@@ -7,6 +7,7 @@ function fakeSupabase(overrides: {
   feedingLogs?: { cat_id: string; date: string }[]
   subscriptions?: { id: string; household_id: string; endpoint: string; p256dh: string; auth: string }[]
   claimedSlots?: Set<string>
+  catsError?: boolean
 }) {
   const claimed = overrides.claimedSlots ?? new Set<string>()
   return {
@@ -22,10 +23,14 @@ function fakeSupabase(overrides: {
         return {
           select: () => ({
             eq: (_col: string, householdId: string) =>
-              Promise.resolve({
-                data: (overrides.cats ?? []).filter((c) => c.household_id === householdId),
-                error: null,
-              }),
+              Promise.resolve(
+                overrides.catsError
+                  ? { data: null, error: { message: 'temporärer Fehler' } }
+                  : {
+                      data: (overrides.cats ?? []).filter((c) => c.household_id === householdId),
+                      error: null,
+                    },
+              ),
           }),
         }
       }
@@ -54,6 +59,21 @@ function fakeSupabase(overrides: {
               return Promise.resolve({ data: [row], error: null })
             },
           }),
+          // Slot-Freigabe: delete().eq().eq().eq() entfernt den Claim wieder
+          delete: () => {
+            const filter: Record<string, string> = {}
+            const chain = {
+              eq: (col: string, val: string) => {
+                filter[col] = val
+                if (Object.keys(filter).length === 3) {
+                  claimed.delete(`${filter.household_id}|${filter.date}|${filter.time_slot}`)
+                  return Promise.resolve({ error: null })
+                }
+                return chain
+              },
+            }
+            return chain
+          },
         }
       }
       if (table === 'push_subscriptions') {
@@ -160,5 +180,23 @@ describe('resolveReminders', () => {
 
     expect(sendPush).toHaveBeenCalledTimes(2)
     expect(result.notified).toBe(1)
+  })
+
+  it('gibt den Slot wieder frei, wenn eine Datenbankabfrage nach dem Claim fehlschlägt', async () => {
+    const sendPush = vi.fn().mockResolvedValue(undefined)
+    const claimedSlots = new Set<string>()
+    const supabase = fakeSupabase({
+      settings: [{ household_id: 'h1', enabled: true, times: ['08:00'] }],
+      catsError: true,
+      claimedSlots,
+    })
+    const now = new Date('2026-10-03T06:00:00Z')
+
+    const result = await resolveReminders(supabase, now, sendPush)
+
+    expect(sendPush).not.toHaveBeenCalled()
+    expect(result.notified).toBe(0)
+    // Der nächste Cron-Lauf darf es erneut versuchen
+    expect(claimedSlots.size).toBe(0)
   })
 })
