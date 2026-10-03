@@ -45,9 +45,11 @@ CREATE POLICY "reminder_settings_update" ON household_reminder_settings
 GRANT SELECT, INSERT, UPDATE ON household_reminder_settings TO authenticated;
 
 -- Verhindert Doppel-Versand innerhalb desselben Zeitslots/Tages. Wird ausschließlich
--- vom Server (Service-Role-Key) beschrieben/gelesen, daher kein RLS nötig — die Tabelle
--- ist für normale Nutzer:innen über die Anon-/Auth-Rolle nicht erreichbar, da keine
--- GRANT-Zeile für 'authenticated' existiert.
+-- vom Server (Service-Role-Key, umgeht RLS grundsätzlich) beschrieben/gelesen.
+-- RLS trotzdem aktiviert und bewusst ohne Policies gelassen: das ist die von Supabase
+-- empfohlene deny-by-default-Haltung (kein stilles Freischalten durch einen späteren,
+-- unbedacht breiten GRANT in einer zukünftigen Migration), nicht nur das Fehlen eines
+-- GRANTs auf 'authenticated'.
 CREATE TABLE reminder_sends (
   household_id UUID REFERENCES households(id) ON DELETE CASCADE NOT NULL,
   date DATE NOT NULL,
@@ -55,6 +57,8 @@ CREATE TABLE reminder_sends (
   sent_at TIMESTAMPTZ DEFAULT now(),
   PRIMARY KEY (household_id, date, time_slot)
 );
+
+ALTER TABLE reminder_sends ENABLE ROW LEVEL SECURITY;
 
 -- pg_cron + pg_net aktivieren und Job registrieren (alle 5 Minuten).
 -- WICHTIG: <VERCEL_DOMAIN> und <CRON_SECRET> vor dem Ausführen durch die echten
