@@ -145,16 +145,23 @@ export function useDayLogs(catIds: string[], date: string, userId: string | null
     refresh()
   }
 
-  async function updateFeedingLog(id: string, amountG: number) {
-    const { error } = await supabase.from('feeding_logs').update({ amount_g: amountG }).eq('id', id)
+  // Menge und (optional) Uhrzeit eines Futter-Eintrags ändern. loggedAt ist ein ISO-Zeitstempel.
+  async function updateFeedingLog(id: string, amountG: number, loggedAt?: string) {
+    const { error } = await supabase
+      .from('feeding_logs')
+      .update(loggedAt ? { amount_g: amountG, logged_at: loggedAt } : { amount_g: amountG })
+      .eq('id', id)
     if (error) throw new Error(error.message)
     refresh()
   }
 
-  async function updatePlayLog(id: string, durationMin: number) {
+  // Dauer und (optional) Uhrzeit eines Spielzeit-Eintrags ändern.
+  async function updatePlayLog(id: string, durationMin: number, loggedAt?: string) {
     const { error } = await supabase
       .from('play_logs')
-      .update({ duration_min: durationMin })
+      .update(
+        loggedAt ? { duration_min: durationMin, logged_at: loggedAt } : { duration_min: durationMin },
+      )
       .eq('id', id)
     if (error) throw new Error(error.message)
     refresh()

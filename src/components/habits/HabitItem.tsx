@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, Pencil } from 'lucide-react'
 import type { HabitDefinition, HabitLog } from '../../types'
 import { resolveHabitIcon } from '../../lib/habitIcons'
+import { formatHabitCount, nextHabitCount } from '../../lib/habitCount'
 
 interface Props {
   habit: HabitDefinition
@@ -17,14 +18,24 @@ interface Props {
 
 export default function HabitItem({ habit, log, mixed, onLog }: Props) {
   const [open, setOpen] = useState(false)
-  const [countValue, setCountValue] = useState(String(log?.count ?? 1))
   const [noteValue, setNoteValue] = useState(log?.note ?? '')
+  // Angezeigter Zählerstand. Wird beim Tippen sofort hochgezählt (fühlt sich schneller an
+  // als auf die Datenbank zu warten) und übernimmt neue Werte, wenn sich der Log ändert
+  // (z. B. anderer Tag gewählt oder Realtime-Update von einem anderen Gerät).
+  const [count, setCount] = useState(log?.count ?? 0)
+  const [syncedCount, setSyncedCount] = useState(log?.count)
+  if (log?.count !== syncedCount) {
+    setSyncedCount(log?.count)
+    setCount(log?.count ?? 0)
+  }
 
   const Icon = resolveHabitIcon(habit.name)
 
-  function confirmCount() {
-    const n = Number(countValue)
-    onLog(true, { count: Number.isFinite(n) ? n : 0, note: log?.note })
+  // Ein Tipp zählt eins weiter: 0 → 1 → … → 10 → 10+ → 0. Bei 0 gilt der Habit als "Nein".
+  function tapCount() {
+    const next = nextHabitCount(count)
+    setCount(next)
+    onLog(next > 0, { count: next, note: log?.note })
   }
 
   function saveNote() {
@@ -37,8 +48,8 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
 
   const statusText =
     habit.type === 'count'
-      ? log?.value
-        ? `${log.count ?? 0}×`
+      ? log?.value && (log.count ?? 0) > 0
+        ? `${formatHabitCount(log.count)}×`
         : undefined
       : habit.type === 'select'
         ? (log?.selected_option ?? undefined)
@@ -91,27 +102,18 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
           )}
 
           {habit.type === 'count' && (
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                value={countValue}
-                onChange={(e) => setCountValue(e.target.value)}
-                className="w-20 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-              />
+            <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={confirmCount}
-                className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color"
+                onClick={tapCount}
+                aria-label={`Anzahl: ${formatHabitCount(count)}. Tippen zum Hochzählen`}
+                className={`min-w-[64px] min-h-[44px] px-4 rounded-control text-[18px] tabular-nums select-none ${count > 0 ? 'bg-apricot text-text-on-color' : 'bg-input text-text-primary border-[0.5px] border-border'}`}
               >
-                Speichern
+                {formatHabitCount(count)}
               </button>
-              <button
-                type="button"
-                onClick={() => onLog(false, { count: 0, note: log?.note })}
-                className="min-h-[44px] px-4 rounded-control text-text-secondary"
-              >
-                Keine
-              </button>
+              <span className="text-[13px] text-text-secondary">
+                Tippen zum Hochzählen (bis 10+, dann wieder 0)
+              </span>
             </div>
           )}
 

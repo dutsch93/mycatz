@@ -142,6 +142,10 @@ export default function Settings() {
     if (message.includes('foreign key') || message.includes('violates')) {
       return 'Kann nicht gelöscht werden — wird noch in bestehenden Einträgen verwendet.'
     }
+    // Habits archivieren braucht die Spalte aus Migration 009
+    if (message.includes('archived')) {
+      return 'Habit konnte nicht entfernt werden — Datenbank-Update (Migration 009) fehlt noch.'
+    }
     return message
   }
 

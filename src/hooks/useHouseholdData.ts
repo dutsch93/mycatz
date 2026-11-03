@@ -140,7 +140,10 @@ export function useHouseholdData(userId: string | null): HouseholdData {
         setCats(catsRes.data as Cat[])
         setGroups(groupsWithMembers)
         setFoodTypes(foodRes.data as FoodType[])
-        setHabits(habitsRes.data as HabitDefinition[])
+        // Archivierte (= in den Einstellungen entfernte) Habits ausblenden. Bewusst im
+        // Client gefiltert statt per .eq('archived', false): So bricht das Laden nicht,
+        // falls Migration 009 (Spalte "archived") noch nicht ausgeführt wurde.
+        setHabits((habitsRes.data as HabitDefinition[]).filter((h) => h.archived !== true))
         setCatHabitExclusions(exclusionsRes.data as CatHabitExclusion[])
         setReminderSettings(
           reminderSettingsRes.error

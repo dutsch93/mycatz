@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   addDays,
+  combineDateAndTime,
   dayNumber,
   formatLongDate,
   lastDays,
   lastMonths,
   monthShortLabel,
+  timeOfDay,
   toIsoDate,
   weekdayShort,
 } from './dates'
@@ -100,5 +102,18 @@ describe('lastMonths', () => {
 describe('monthShortLabel', () => {
   it('formats a YYYY-MM key as a short German month name', () => {
     expect(monthShortLabel('2026-09')).toContain('Sep')
+  })
+})
+
+describe('timeOfDay / combineDateAndTime', () => {
+  it('formatiert die lokale Uhrzeit zweistellig', () => {
+    const ts = new Date(2026, 10, 3, 7, 5).toISOString()
+    expect(timeOfDay(ts)).toBe('07:05')
+  })
+
+  it('setzt Datum und Uhrzeit zusammen und liest sie wieder zurück', () => {
+    const ts = combineDateAndTime('2026-11-03', '18:42')
+    expect(timeOfDay(ts)).toBe('18:42')
+    expect(new Date(ts).getDate()).toBe(3)
   })
 })

@@ -75,6 +75,8 @@ export interface HabitDefinition {
   sort_order: number
   category: HabitCategory
   created_at: string
+  // Seit Migration 009; vorher fehlt die Spalte (dann undefined = aktiv)
+  archived?: boolean
 }
 
 export interface FeedingLog {

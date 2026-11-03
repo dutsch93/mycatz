@@ -274,8 +274,14 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     householdData.refresh()
   }
 
+  // Habits werden archiviert statt gelöscht: Ein echtes DELETE scheitert, sobald es
+  // Tagebuch-Einträge dazu gibt (habit_logs verweist per Fremdschlüssel darauf).
+  // Archivierte Habits blendet useHouseholdData überall aus.
   async function deleteHabit(id: string) {
-    const { error } = await supabase.from('habit_definitions').delete().eq('id', id)
+    const { error } = await supabase
+      .from('habit_definitions')
+      .update({ archived: true })
+      .eq('id', id)
     if (error) throw new Error(error.message)
     householdData.refresh()
   }

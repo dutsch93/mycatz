@@ -54,3 +54,17 @@ export function monthShortLabel(monthKey: string): string {
   const [y, m] = monthKey.split('-').map(Number)
   return new Date(y, m - 1, 1).toLocaleDateString('de-DE', { month: 'short' })
 }
+
+// Uhrzeit eines Zeitstempels (z. B. logged_at) in lokaler Zeit als "HH:MM".
+export function timeOfDay(timestamp: string): string {
+  const d = new Date(timestamp)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+// Setzt Tag ("YYYY-MM-DD") und Uhrzeit ("HH:MM") in lokaler Zeit zu einem
+// ISO-Zeitstempel zusammen — so wird eine bearbeitete Uhrzeit gespeichert.
+export function combineDateAndTime(dateIso: string, time: string): string {
+  const [y, m, d] = dateIso.split('-').map(Number)
+  const [hh, mm] = time.split(':').map(Number)
+  return new Date(y, m - 1, d, hh, mm).toISOString()
+}

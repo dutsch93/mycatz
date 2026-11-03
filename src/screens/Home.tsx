@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
-import { formatLongDate, todayIso } from '../lib/dates'
+import { combineDateAndTime, formatLongDate, timeOfDay, todayIso } from '../lib/dates'
 import { isWebNfcSupported, scanNfcTag } from '../lib/nfc'
-import { Utensils, Volleyball, NotebookPen, X, Nfc, ChevronDown, ChevronUp } from 'lucide-react'
+import { Utensils, Volleyball, NotebookPen, X, Nfc, ChevronDown, ChevronUp, Clock } from 'lucide-react'
 import DayStrip from '../components/calendar/DayStrip'
 import MonthOverlay from '../components/calendar/MonthOverlay'
 import FitnessRings from '../components/rings/FitnessRings'
@@ -14,10 +14,12 @@ import type { FeedingLog, PlayLog } from '../types'
 
 type ActivityEntry = { kind: 'feeding'; log: FeedingLog } | { kind: 'play'; log: PlayLog }
 
-// Eine Zeile der Aktivitäts-Karte: zeigt Katze, Icon und (sofern erlaubt) editierbaren Wert.
+// Eine Zeile der Aktivitäts-Karte. Zugeklappt: Katze, Icon und Menge. Aufgeklappt: Uhrzeit
+// des Eintrags und (sofern erlaubt) Felder zum Bearbeiten von Menge und Uhrzeit.
 function ActivityRow({
   entry,
   catName,
+  foodTypeName,
   canEdit,
   onUpdateFeeding,
   onUpdatePlay,
@@ -26,9 +28,10 @@ function ActivityRow({
 }: {
   entry: ActivityEntry
   catName: (catId: string) => string
+  foodTypeName: (foodTypeId: string) => string | undefined
   canEdit: boolean
-  onUpdateFeeding: (id: string, amountG: number) => void
-  onUpdatePlay: (id: string, durationMin: number) => void
+  onUpdateFeeding: (id: string, amountG: number, loggedAt?: string) => Promise<void>
+  onUpdatePlay: (id: string, durationMin: number, loggedAt?: string) => Promise<void>
   onDeleteFeeding: (id: string) => void
   onDeletePlay: (id: string) => void
 }) {
@@ -36,43 +39,122 @@ function ActivityRow({
   const Icon = kind === 'feeding' ? Utensils : Volleyball
   const value = kind === 'feeding' ? log.amount_g : log.duration_min
   const unit = kind === 'feeding' ? 'g' : 'min'
+  const time = timeOfDay(log.logged_at)
+  const subtitle = kind === 'feeding' ? foodTypeName(log.food_type_id) : 'Spielzeit'
+
+  const [open, setOpen] = useState(false)
+  const [valueInput, setValueInput] = useState(String(value))
+  const [timeInput, setTimeInput] = useState(time)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Beim Aufklappen die Felder mit den aktuellen Werten füllen (falls sich der
+  // Eintrag inzwischen geändert hat, z. B. per Realtime von einem anderen Gerät).
+  function toggle() {
+    if (!open) {
+      setValueInput(String(value))
+      setTimeInput(time)
+      setError(null)
+    }
+    setOpen((o) => !o)
+  }
+
+  const nextValue = Number(valueInput)
+  const valid = Number.isFinite(nextValue) && nextValue > 0 && /^\d{2}:\d{2}$/.test(timeInput)
+  const changed = nextValue !== value || timeInput !== time
+
+  async function save() {
+    if (!valid || !changed) return
+    setSaving(true)
+    setError(null)
+    // Uhrzeit nur mitschicken, wenn sie geändert wurde — sonst bleiben die Sekunden erhalten.
+    const loggedAt = timeInput !== time ? combineDateAndTime(log.date, timeInput) : undefined
+    try {
+      if (kind === 'feeding') await onUpdateFeeding(log.id, nextValue, loggedAt)
+      else await onUpdatePlay(log.id, nextValue, loggedAt)
+      setOpen(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Speichern fehlgeschlagen')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
-    <div className="flex items-center gap-2 bg-input rounded-control px-3 py-2">
-      <Icon size={16} strokeWidth={1.75} className="text-text-secondary shrink-0" />
-      <span className="flex-1 min-w-0 truncate text-[13px] text-text-primary">
-        {catName(log.cat_id)}
-      </span>
-      {canEdit ? (
-        <span className="flex items-center gap-1 w-20 shrink-0 text-[13px] text-text-secondary">
-          <input
-            type="number"
-            defaultValue={value}
-            onBlur={(e) => {
-              const next = Number(e.target.value)
-              if (next <= 0 || next === value) return
-              if (kind === 'feeding') onUpdateFeeding(log.id, next)
-              else onUpdatePlay(log.id, next)
-            }}
-            className="w-12 min-h-[32px] px-1 rounded bg-card text-right"
-          />
-          <span className="w-7 text-left">{unit}</span>
+    <div className="bg-input rounded-control">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={open}
+        className="w-full min-h-[44px] flex items-center gap-2 px-3 py-2 text-left"
+      >
+        <Icon size={16} strokeWidth={1.75} className="text-text-secondary shrink-0" />
+        <span className="flex-1 min-w-0 truncate text-[13px] text-text-primary">
+          {catName(log.cat_id)}
+          {subtitle && <span className="text-text-secondary"> · {subtitle}</span>}
         </span>
-      ) : (
-        <span className="flex items-center gap-1 w-20 shrink-0 text-[13px] text-text-secondary">
-          <span className="flex-1 text-right">{value}</span>
-          <span className="w-7 text-left">{unit}</span>
+        <span className="shrink-0 text-[13px] text-text-secondary tabular-nums">
+          {value} {unit}
         </span>
-      )}
-      {canEdit && (
-        <button
-          type="button"
-          onClick={() => (kind === 'feeding' ? onDeleteFeeding(log.id) : onDeletePlay(log.id))}
-          className="w-8 h-8 shrink-0 flex items-center justify-center text-muted-red"
-          aria-label="Eintrag löschen"
-        >
-          <X size={16} />
-        </button>
+        <ChevronDown
+          size={16}
+          className={`text-text-secondary shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <div className="px-3 pb-3 flex flex-col gap-2">
+          <p className="flex items-center gap-1 text-[13px] text-text-secondary">
+            <Clock size={14} strokeWidth={1.75} /> Eingetragen um {time} Uhr
+            {log.note && <span className="truncate"> · {log.note}</span>}
+          </p>
+
+          {canEdit && (
+            <>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1 text-[13px] text-text-secondary">
+                  <span className="sr-only">{kind === 'feeding' ? 'Menge' : 'Dauer'}</span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    value={valueInput}
+                    onChange={(e) => setValueInput(e.target.value)}
+                    className="w-20 min-h-[44px] px-2 rounded-control bg-card border-[0.5px] border-border text-right text-text-primary"
+                  />
+                  {unit}
+                </label>
+                <label className="flex items-center gap-1 text-[13px] text-text-secondary">
+                  <span className="sr-only">Uhrzeit</span>
+                  <input
+                    type="time"
+                    value={timeInput}
+                    onChange={(e) => setTimeInput(e.target.value)}
+                    className="min-h-[44px] px-2 rounded-control bg-card border-[0.5px] border-border text-text-primary"
+                  />
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={save}
+                  disabled={!valid || !changed || saving}
+                  className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color disabled:opacity-50"
+                >
+                  {saving ? 'Speichert…' : 'Speichern'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => (kind === 'feeding' ? onDeleteFeeding(log.id) : onDeletePlay(log.id))}
+                  className="min-h-[44px] px-4 rounded-control text-muted-red flex items-center gap-1"
+                >
+                  <X size={16} /> Löschen
+                </button>
+              </div>
+              {error && <p className="text-[13px] text-muted-red">{error}</p>}
+            </>
+          )}
+        </div>
       )}
     </div>
   )
@@ -85,6 +167,7 @@ export default function Home() {
     loading,
     profile,
     cats,
+    foodTypes,
     habits,
     catHabitExclusions,
     target,
@@ -157,6 +240,10 @@ export default function Home() {
 
   function catName(catId: string) {
     return cats.find((c) => c.id === catId)?.name ?? '—'
+  }
+
+  function foodTypeName(foodTypeId: string) {
+    return foodTypes.find((f) => f.id === foodTypeId)?.name
   }
 
   // Ein Habit ist sichtbar, wenn er für mindestens eine der Zielkatzen aktiv ist
@@ -240,6 +327,7 @@ export default function Home() {
                     key={`${entry.kind}-${entry.log.id}`}
                     entry={entry}
                     catName={catName}
+                    foodTypeName={foodTypeName}
                     canEdit={canEdit}
                     onUpdateFeeding={updateFeedingLog}
                     onUpdatePlay={updatePlayLog}
@@ -257,6 +345,7 @@ export default function Home() {
                           key={`${entry.kind}-${entry.log.id}`}
                           entry={entry}
                           catName={catName}
+                          foodTypeName={foodTypeName}
                           canEdit={canEdit}
                           onUpdateFeeding={updateFeedingLog}
                           onUpdatePlay={updatePlayLog}
