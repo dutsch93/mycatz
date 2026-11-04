@@ -159,7 +159,7 @@ export default function FeedingQuickAdd({
             type="button"
             disabled={!foodTypeId || !amountG || saving}
             onClick={saveFeeding}
-            className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+            className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
           >
             Speichern
           </button>
@@ -181,7 +181,7 @@ export default function FeedingQuickAdd({
             type="button"
             disabled={!playMin || saving}
             onClick={savePlay}
-            className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+            className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
           >
             Speichern
           </button>
@@ -204,7 +204,7 @@ export default function FeedingQuickAdd({
             type="button"
             disabled={!weightKg || saving}
             onClick={saveWeight}
-            className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+            className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
           >
             Speichern
           </button>
@@ -225,7 +225,7 @@ export default function FeedingQuickAdd({
             type="button"
             disabled={!noteText.trim() || saving}
             onClick={saveNote}
-            className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+            className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
           >
             Speichern
           </button>

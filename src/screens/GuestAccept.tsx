@@ -53,12 +53,12 @@ export default function GuestAccept() {
           placeholder="Dein Name (optional)"
           className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
         />
-        {error && <p className="text-[13px] text-muted-red">{error}</p>}
+        {error && <p className="text-[13px] text-muted-red-strong">{error}</p>}
         <button
           type="button"
           onClick={join}
           disabled={joining}
-          className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+          className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
         >
           {joining ? 'Wird verbunden…' : 'Als Gast beitreten'}
         </button>

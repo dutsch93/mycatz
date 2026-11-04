@@ -21,11 +21,17 @@ export default function Shell({ children }: { children: ReactNode }) {
     <div className="min-h-screen">
       <div className="max-w-app mx-auto">
         <Header />
-        <main className="px-4 pb-24">{children}</main>
+        {/* Unterer Abstand = Höhe der Tab-Leiste + Safe Area, damit nichts verdeckt wird */}
+        <main
+          className="px-4"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}
+        >
+          {children}
+        </main>
       </div>
       <BottomNav />
       {nfcPulse && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[90%] px-4 py-2 rounded-control bg-apricot text-text-on-color text-[13px] text-center animate-pulse flex items-center gap-2">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[90%] px-4 py-2 rounded-control bg-apricot-strong text-text-on-color text-[13px] text-center animate-pulse flex items-center gap-2">
           <Nfc size={16} strokeWidth={1.75} /> {nfcPulse}
         </div>
       )}

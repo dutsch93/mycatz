@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatHabitCount, nextHabitCount } from './habitCount'
+import { formatHabitCount, nextHabitCount, prevHabitCount } from './habitCount'
 
 describe('nextHabitCount', () => {
   it('startet bei fehlendem Wert mit 1', () => {
@@ -35,5 +35,21 @@ describe('formatHabitCount', () => {
   it('zeigt ab 11 "10+" an', () => {
     expect(formatHabitCount(11)).toBe('10+')
     expect(formatHabitCount(30)).toBe('10+')
+  })
+})
+
+describe('prevHabitCount', () => {
+  it('zählt um eins zurück', () => {
+    expect(prevHabitCount(3)).toBe(2)
+    expect(prevHabitCount(11)).toBe(10)
+  })
+
+  it('bleibt bei 0 bzw. fehlendem Wert auf 0', () => {
+    expect(prevHabitCount(0)).toBe(0)
+    expect(prevHabitCount(undefined)).toBe(0)
+  })
+
+  it('geht von alten Werten über 10+ auf 10', () => {
+    expect(prevHabitCount(25)).toBe(10)
   })
 })

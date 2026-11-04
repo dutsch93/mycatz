@@ -78,7 +78,7 @@ export default function OnboardingWizard() {
     return (
       <div className="min-h-screen px-4 py-6 flex items-center">
         <GlassCard className="max-w-app mx-auto text-center flex flex-col gap-4 p-6">
-          <PawPrint size={40} strokeWidth={1.5} className="mx-auto text-apricot" />
+          <PawPrint size={40} strokeWidth={1.5} className="mx-auto text-apricot-strong" />
           <h2>Willkommen bei MyCatz</h2>
           <p className="text-text-secondary">
             In wenigen Schritten richten wir euren Haushalt ein: eure Katze(n), Futterarten
@@ -87,7 +87,7 @@ export default function OnboardingWizard() {
           <button
             type="button"
             onClick={() => setStep(1)}
-            className="min-h-[44px] rounded-control bg-apricot text-text-on-color"
+            className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color"
           >
             Onboarding starten
           </button>
@@ -119,7 +119,7 @@ export default function OnboardingWizard() {
         </GlassCard>
 
         {error && (
-          <p className="mt-4 text-[13px] text-muted-red">{error}</p>
+          <p className="mt-4 text-[13px] text-muted-red-strong">{error}</p>
         )}
 
         <div className="flex items-center gap-3 mt-8">
@@ -136,7 +136,7 @@ export default function OnboardingWizard() {
             <button
               type="button"
               onClick={goNext}
-              className="flex-1 min-h-[44px] rounded-control bg-apricot text-text-on-color"
+              className="flex-1 min-h-[44px] rounded-control bg-apricot-strong text-text-on-color"
             >
               Weiter
             </button>
@@ -146,7 +146,7 @@ export default function OnboardingWizard() {
               type="button"
               onClick={handleFinish}
               disabled={sending}
-              className="flex-1 min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="flex-1 min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               {sending ? 'Wird gesendet…' : 'Fertig'}
             </button>

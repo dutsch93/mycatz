@@ -59,11 +59,19 @@ Herleitung: `docs/superpowers/specs/2026-09-21-liquid-glass-dashboard-design.md`
   --color-sage:       #85B79D;   /* Status OK, Futter-Ring */
   --color-warm-brown: #D4A574;   /* Warnung */
   --color-muted-red:  #C97C7C;   /* Achtung */
-  --color-gray:       #8E8E93;   /* Sekundärer Text, Labels, Timestamps */
+  --color-gray:       #8E8E93;   /* nur noch für Flächen/Charts, nicht für Text */
+
+  /* Kräftige Varianten für Text und Knöpfe mit weißer Schrift (seit 2026-11-04,
+     Apple-Design-Review: die hellen Töne erreichen als Text nur 1.8–2.9:1).
+     Regel: helle Markenfarbe = Fläche/Daten (Ringe, Punkte, Verlauf),
+     -strong = alles mit Text darauf oder als Text. Alle ≥ 4.5:1 (WCAG AA). */
+  --color-apricot-strong:   #9A5527;   /* Primär-Buttons, Links, aktiver Tab */
+  --color-sage-strong:      #47735B;   /* Erfolgs-/OK-Text */
+  --color-muted-red-strong: #A04545;   /* Löschen, Fehlertexte */
 
   /* Text */
   --text-primary:     #1C1C1E;   /* Headlines, Body */
-  --text-secondary:   #8E8E93;   /* Labels, Zeitstempel */
+  --text-secondary:   #666670;   /* Labels, Zeitstempel (vorher #8E8E93 = 2.9:1) */
   --text-on-color:    #FFFFFF;   /* Text auf farbigen Buttons */
 
   /* Borders (weiterhin für opake Elemente wie Inputs/Buttons) */
@@ -95,7 +103,8 @@ Herleitung: `docs/superpowers/specs/2026-09-21-liquid-glass-dashboard-design.md`
 ### UI-Elemente
 
 - **Cards:** `.glass`-Utility (`GlassCard`-Komponente) — durchscheinend, `blur(22px)`, `border-radius: 24px`, weicher Schatten statt hartem Rand
-- **Buttons:** `--color-apricot` Background, weißer Text, `border-radius: 8px`
+- **Buttons:** `--color-apricot-strong` Background (Tailwind `bg-apricot-strong`), weißer Text, `border-radius: 8px`
+- **Tab-Leiste:** Icon + sichtbares Label; aktiver Tab = Pille hinter dem Icon + kräftigeres Label (nicht nur Farbe); Abstand unten über `env(safe-area-inset-bottom)`
 - **Inputs:** `--bg-input` (opak), `0.5px solid --border-default`, `border-radius: 8px`
 - **Charts:** Salbeigrün für Futter, Apricot für Spielzeit
 - **Layout:** Mobile-first, Single-Column, max-width 440px zentriert — auch Habits sind eine ausklappbare Liste (kein Kachel-Grid), einzige Ausnahme ist das 7-Spalten-Dichteraster der Gesundheits-Heatmap in den Stats

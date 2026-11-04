@@ -108,7 +108,7 @@ export default function StepFood({ draft, onChange }: Props) {
           type="button"
           onClick={addCustomFoodType}
           disabled={!customName.trim()}
-          className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+          className="min-h-[44px] px-4 rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
         >
           +
         </button>

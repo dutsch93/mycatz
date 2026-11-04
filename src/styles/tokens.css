@@ -9,9 +9,14 @@
   --color-muted-red: #C97C7C;
   --color-gray: #8E8E93;
 
+  /* Kräftige Varianten für Text/Knöpfe mit weißer Schrift (WCAG AA ≥ 4.5:1) */
+  --color-apricot-strong: #9A5527;
+  --color-sage-strong: #47735B;
+  --color-muted-red-strong: #A04545;
+
   /* Text */
   --text-primary: #1C1C1E;
-  --text-secondary: #8E8E93;
+  --text-secondary: #666670;   /* 5.1:1 auf Input-Grau, vorher #8E8E93 = 2.9:1 */
   --text-on-color: #FFFFFF;
 
   /* Borders */

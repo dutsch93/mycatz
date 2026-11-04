@@ -253,7 +253,7 @@ export default function Profile() {
       <h2>Profil</h2>
 
       {errorMsg && (
-        <p className="text-[13px] text-muted-red bg-input rounded-control px-3 py-2">
+        <p className="text-[13px] text-muted-red-strong bg-input rounded-control px-3 py-2">
           {errorMsg}
         </p>
       )}
@@ -279,7 +279,7 @@ export default function Profile() {
                   className="flex-1 flex items-center justify-between min-h-[44px]"
                 >
                   <span>{cat.name}</span>
-                  {isSelected && <Check size={18} className="text-apricot" />}
+                  {isSelected && <Check size={18} className="text-apricot-strong" />}
                 </button>
               </GlassCard>
             )
@@ -303,7 +303,7 @@ export default function Profile() {
                     <Users size={16} strokeWidth={1.75} />
                     {group.name}
                   </span>
-                  {isSelected && <Check size={18} className="text-apricot" />}
+                  {isSelected && <Check size={18} className="text-apricot-strong" />}
                 </button>
               </GlassCard>
             )
@@ -344,7 +344,7 @@ export default function Profile() {
                     <button
                       type="button"
                       onClick={() => handleArchiveCat(cat.id)}
-                      className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red"
+                      className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red-strong"
                       aria-label={`${cat.name} archivieren`}
                     >
                       <X size={16} />
@@ -482,7 +482,7 @@ export default function Profile() {
                             onClick={() => toggleCatTag(cat.id, cat.tags ?? [], tag)}
                             className={`text-[13px] px-2.5 py-1 rounded-full border-[0.5px] ${
                               active
-                                ? 'bg-apricot text-text-on-color border-apricot'
+                                ? 'bg-apricot-strong text-text-on-color border-apricot-strong'
                                 : 'bg-input text-text-secondary border-border'
                             }`}
                           >
@@ -626,7 +626,7 @@ export default function Profile() {
                     onClick={() => toggleNewCatTag(tag)}
                     className={`text-[13px] px-2.5 py-1 rounded-full border-[0.5px] ${
                       active
-                        ? 'bg-apricot text-text-on-color border-apricot'
+                        ? 'bg-apricot-strong text-text-on-color border-apricot-strong'
                         : 'bg-input text-text-secondary border-border'
                     }`}
                   >
@@ -639,7 +639,7 @@ export default function Profile() {
               type="button"
               onClick={saveNewCat}
               disabled={!catName.trim()}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               Katze speichern
             </button>
@@ -692,7 +692,7 @@ export default function Profile() {
                     <button
                       type="button"
                       onClick={() => handleDeleteGroup(group.id)}
-                      className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red"
+                      className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red-strong"
                       aria-label={`${group.name} löschen`}
                     >
                       <X size={16} />
@@ -722,7 +722,7 @@ export default function Profile() {
                       type="button"
                       onClick={() => handleSaveGroupMembers(group.id)}
                       disabled={editGroupCatIds.length < 2}
-                      className="min-h-[40px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+                      className="min-h-[40px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
                     >
                       Mitglieder speichern
                     </button>
@@ -739,7 +739,7 @@ export default function Profile() {
                       <button
                         type="button"
                         onClick={() => startEditGroup(group.id, group.catIds)}
-                        className="text-[13px] text-apricot underline"
+                        className="text-[13px] text-apricot-strong underline"
                       >
                         Mitglieder bearbeiten
                       </button>
@@ -778,7 +778,7 @@ export default function Profile() {
               type="button"
               onClick={saveNewGroup}
               disabled={!groupName.trim() || newGroupCatIds.length < 2}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               Gruppe speichern
             </button>

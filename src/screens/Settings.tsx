@@ -296,7 +296,7 @@ export default function Settings() {
       <h2>Einstellungen</h2>
 
       {errorMsg && (
-        <p className="text-[13px] text-muted-red bg-input rounded-control px-3 py-2">
+        <p className="text-[13px] text-muted-red-strong bg-input rounded-control px-3 py-2">
           {errorMsg}
         </p>
       )}
@@ -326,7 +326,7 @@ export default function Settings() {
               className={`min-h-[40px] px-4 rounded-control disabled:opacity-60 ${
                 deviceSubscribed
                   ? 'bg-input text-text-primary'
-                  : 'bg-apricot text-text-on-color'
+                  : 'bg-apricot-strong text-text-on-color'
               }`}
             >
               {deviceSubscribed ? 'Deaktivieren' : 'Aktivieren'}
@@ -357,7 +357,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleSaveReminderSettings}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color"
             >
               Erinnerungen speichern
             </button>
@@ -387,7 +387,7 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => handleDeleteHabit(habit.id)}
-                    className="w-11 h-11 flex items-center justify-center text-muted-red"
+                    className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                     aria-label={`${habit.name} entfernen`}
                   >
                     <X size={16} />
@@ -449,7 +449,7 @@ export default function Settings() {
                 (newHabitType === 'select' &&
                   !newHabitOptions.split(',').map((o) => o.trim()).filter(Boolean).length)
               }
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               Habit speichern
             </button>
@@ -493,7 +493,7 @@ export default function Settings() {
                       <button
                         type="button"
                         onClick={() => handleDeleteFoodType(food.id)}
-                        className="w-11 h-11 flex items-center justify-center text-muted-red"
+                        className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                         aria-label={`${food.name} entfernen`}
                       >
                         <X size={16} />
@@ -542,7 +542,7 @@ export default function Settings() {
               type="button"
               onClick={saveNewFoodType}
               disabled={!foodName.trim() || !foodPortion}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               Futterart speichern
             </button>
@@ -572,7 +572,7 @@ export default function Settings() {
                     <button
                       type="button"
                       onClick={() => handleDeleteTag(tag.id)}
-                      className="w-11 h-11 flex items-center justify-center text-muted-red"
+                      className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                       aria-label="Tag entfernen"
                     >
                       <X size={16} />
@@ -623,9 +623,9 @@ export default function Settings() {
               )}
 
               {tagIdentifier && (
-                <p className="text-[13px] text-sage">Tag erkannt: {tagIdentifier}</p>
+                <p className="text-[13px] text-sage-strong">Tag erkannt: {tagIdentifier}</p>
               )}
-              {scanError && <p className="text-[13px] text-muted-red">{scanError}</p>}
+              {scanError && <p className="text-[13px] text-muted-red-strong">{scanError}</p>}
 
               <input
                 type="text"
@@ -639,7 +639,7 @@ export default function Settings() {
                 type="button"
                 onClick={saveTag}
                 disabled={!foodTypeId || !tagIdentifier.trim()}
-                className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+                className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
               >
                 Tag speichern
               </button>
@@ -683,7 +683,7 @@ export default function Settings() {
                       <button
                         type="button"
                         onClick={() => handleCancelInvite(invite.id)}
-                        className="w-11 h-11 flex items-center justify-center text-muted-red"
+                        className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                         aria-label="Einladung zurückziehen"
                       >
                         <X size={16} />
@@ -708,7 +708,7 @@ export default function Settings() {
               type="button"
               onClick={handleCreateInvite}
               disabled={!inviteEmail.trim()}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               Einladung erstellen
             </button>
@@ -768,7 +768,7 @@ export default function Settings() {
                         <button
                           type="button"
                           onClick={() => handleRevokeGuestLink(link.id)}
-                          className="w-11 h-11 flex items-center justify-center text-muted-red"
+                          className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                           aria-label="Gast-Link widerrufen"
                         >
                           <X size={16} />
@@ -808,7 +808,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleCreateGuestLink}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color"
             >
               Gast-Link erstellen
             </button>

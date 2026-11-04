@@ -98,7 +98,7 @@ export default function InviteAccept() {
           <>
             <div className="text-5xl">⚠️</div>
             <h2>Da ist etwas schiefgelaufen</h2>
-            <p className="text-muted-red">{error}</p>
+            <p className="text-muted-red-strong">{error}</p>
           </>
         )}
 
@@ -134,12 +134,12 @@ export default function InviteAccept() {
               placeholder="E-Mail-Adresse"
               className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
             />
-            {error && <p className="text-[13px] text-muted-red">{error}</p>}
+            {error && <p className="text-[13px] text-muted-red-strong">{error}</p>}
             <button
               type="button"
               onClick={sendLink}
               disabled={!email.trim()}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               Link senden
             </button>

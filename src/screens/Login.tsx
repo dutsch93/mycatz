@@ -91,12 +91,12 @@ export default function Login() {
               placeholder="6-stelliger Code"
               className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-center"
             />
-            {error && <p className="text-[13px] text-muted-red">{error}</p>}
+            {error && <p className="text-[13px] text-muted-red-strong">{error}</p>}
             <button
               type="button"
               onClick={handleVerifyCode}
               disabled={!code.trim() || verifying}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               {verifying ? 'Wird geprüft…' : 'Code bestätigen'}
             </button>
@@ -115,18 +115,18 @@ export default function Login() {
               placeholder="E-Mail-Adresse"
               className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
             />
-            {error && <p className="text-[13px] text-muted-red">{error}</p>}
+            {error && <p className="text-[13px] text-muted-red-strong">{error}</p>}
             <button
               type="button"
               onClick={handleLogin}
               disabled={!email.trim() || sending}
-              className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+              className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
             >
               {sending ? 'Wird gesendet…' : 'Login-Link senden'}
             </button>
             <p className="text-[13px] text-text-secondary">
               Noch keinen Haushalt?{' '}
-              <Link to="/onboarding" className="text-apricot underline">
+              <Link to="/onboarding" className="text-apricot-strong underline">
                 Onboarding starten
               </Link>
             </p>

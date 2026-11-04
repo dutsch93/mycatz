@@ -148,7 +148,7 @@ export default function Stats() {
             type="button"
             onClick={() => setRange(r)}
             className={`min-h-[36px] px-4 rounded-2xl text-[13px] ${
-              range === r ? 'bg-apricot text-text-on-color' : 'text-text-secondary'
+              range === r ? 'bg-apricot-strong text-text-on-color' : 'text-text-secondary'
             }`}
           >
             {RANGE_LABELS[r]}
@@ -162,7 +162,7 @@ export default function Stats() {
         <GlassCard className="p-3">
           <p className="text-text-primary">
             Spielzeit ist um{' '}
-            <span className={playInsightPercent >= 0 ? 'text-sage' : 'text-muted-red'}>
+            <span className={playInsightPercent >= 0 ? 'text-sage-strong' : 'text-muted-red-strong'}>
               {playInsightPercent >= 0 ? '+' : ''}
               {playInsightPercent}%
             </span>{' '}

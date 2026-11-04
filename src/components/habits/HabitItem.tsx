@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { ChevronDown, Pencil } from 'lucide-react'
+import { ChevronDown, Minus, Pencil } from 'lucide-react'
 import type { HabitDefinition, HabitLog } from '../../types'
 import { resolveHabitIcon } from '../../lib/habitIcons'
-import { formatHabitCount, nextHabitCount } from '../../lib/habitCount'
+import { formatHabitCount, nextHabitCount, prevHabitCount } from '../../lib/habitCount'
 
 interface Props {
   habit: HabitDefinition
@@ -33,7 +33,15 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
 
   // Ein Tipp zählt eins weiter: 0 → 1 → … → 10 → 10+ → 0. Bei 0 gilt der Habit als "Nein".
   function tapCount() {
-    const next = nextHabitCount(count)
+    saveCount(nextHabitCount(count))
+  }
+
+  // Korrektur bei Vertippern: ein Schritt zurück statt einmal komplett durchzutippen.
+  function decrementCount() {
+    saveCount(prevHabitCount(count))
+  }
+
+  function saveCount(next: number) {
     setCount(next)
     onLog(next > 0, { count: next, note: log?.note })
   }
@@ -73,7 +81,7 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
           {mixed && <span className="ml-2 text-[13px] text-text-secondary">(gemischt)</span>}
         </span>
         {statusText && <span className="text-[13px] text-text-secondary">{statusText}</span>}
-        {log?.note && <Pencil size={12} className="text-apricot shrink-0" />}
+        {log?.note && <Pencil size={12} className="text-apricot-strong shrink-0" />}
         <ChevronDown
           size={18}
           className={`text-text-secondary shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
@@ -105,14 +113,23 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
             <div className="flex items-center gap-3">
               <button
                 type="button"
+                onClick={decrementCount}
+                disabled={count === 0}
+                aria-label="Eins weniger"
+                className="w-11 h-11 shrink-0 flex items-center justify-center rounded-control bg-input border-[0.5px] border-border text-text-primary disabled:opacity-40"
+              >
+                <Minus size={18} />
+              </button>
+              <button
+                type="button"
                 onClick={tapCount}
                 aria-label={`Anzahl: ${formatHabitCount(count)}. Tippen zum Hochzählen`}
-                className={`min-w-[64px] min-h-[44px] px-4 rounded-control text-[18px] tabular-nums select-none ${count > 0 ? 'bg-apricot text-text-on-color' : 'bg-input text-text-primary border-[0.5px] border-border'}`}
+                className={`min-w-[64px] min-h-[44px] px-4 rounded-control text-[18px] tabular-nums select-none ${count > 0 ? 'bg-apricot-strong text-text-on-color' : 'bg-input text-text-primary border-[0.5px] border-border'}`}
               >
                 {formatHabitCount(count)}
               </button>
               <span className="text-[13px] text-text-secondary">
-                Tippen zum Hochzählen (bis 10+, dann wieder 0)
+                Tippen zählt hoch (bis 10+, dann wieder 0)
               </span>
             </div>
           )}
@@ -145,7 +162,7 @@ export default function HabitItem({ habit, log, mixed, onLog }: Props) {
             <button
               type="button"
               onClick={saveNote}
-              className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color"
+              className="min-h-[44px] px-4 rounded-control bg-apricot-strong text-text-on-color"
             >
               OK
             </button>

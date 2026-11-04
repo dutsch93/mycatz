@@ -21,7 +21,7 @@ export default function ChipGrid({
           onClick={() => onSelect(chip.id)}
           className={`min-h-[44px] px-4 rounded-control border-[0.5px] ${
             selectedId === chip.id
-              ? 'bg-apricot border-apricot text-text-on-color'
+              ? 'bg-apricot-strong border-apricot-strong text-text-on-color'
               : 'bg-input border-border text-text-primary'
           }`}
         >

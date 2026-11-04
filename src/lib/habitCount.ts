@@ -12,3 +12,9 @@ export function formatHabitCount(count: number | null | undefined): string {
   const value = count ?? 0
   return value >= HABIT_COUNT_MAX ? '10+' : String(value)
 }
+
+// Ein Schritt zurück, falls man sich vertippt hat: 10+ → 10 → … → 0, nicht unter 0.
+export function prevHabitCount(current: number | null | undefined): number {
+  const value = Math.min(current ?? 0, HABIT_COUNT_MAX)
+  return Math.max(value - 1, 0)
+}

@@ -73,7 +73,7 @@ export default function StepCats({ draft, onChange }: Props) {
               <button
                 type="button"
                 onClick={() => removeCat(cat.localId)}
-                className="w-11 h-11 flex items-center justify-center text-muted-red"
+                className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                 aria-label={`${cat.name} entfernen`}
               >
                 <X size={16} />
@@ -153,7 +153,7 @@ export default function StepCats({ draft, onChange }: Props) {
           type="button"
           onClick={addCat}
           disabled={!form.name.trim()}
-          className="min-h-[44px] rounded-control bg-apricot text-text-on-color disabled:opacity-60"
+          className="min-h-[44px] rounded-control bg-apricot-strong text-text-on-color disabled:opacity-60"
         >
           Katze hinzufügen
         </button>

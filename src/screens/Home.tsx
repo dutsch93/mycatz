@@ -139,19 +139,19 @@ function ActivityRow({
                   type="button"
                   onClick={save}
                   disabled={!valid || !changed || saving}
-                  className="min-h-[44px] px-4 rounded-control bg-apricot text-text-on-color disabled:opacity-50"
+                  className="min-h-[44px] px-4 rounded-control bg-apricot-strong text-text-on-color disabled:opacity-50"
                 >
                   {saving ? 'Speichert…' : 'Speichern'}
                 </button>
                 <button
                   type="button"
                   onClick={() => (kind === 'feeding' ? onDeleteFeeding(log.id) : onDeletePlay(log.id))}
-                  className="min-h-[44px] px-4 rounded-control text-muted-red flex items-center gap-1"
+                  className="min-h-[44px] px-4 rounded-control text-muted-red-strong flex items-center gap-1"
                 >
                   <X size={16} /> Löschen
                 </button>
               </div>
-              {error && <p className="text-[13px] text-muted-red">{error}</p>}
+              {error && <p className="text-[13px] text-muted-red-strong">{error}</p>}
             </>
           )}
         </div>
@@ -210,7 +210,7 @@ export default function Home() {
     return (
       <div className="py-6 text-center flex flex-col gap-3">
         <p className="text-text-secondary">Bitte meldet euch an, um MyCatz zu nutzen.</p>
-        <Link to="/login" className="text-apricot underline">
+        <Link to="/login" className="text-apricot-strong underline">
           Zum Login
         </Link>
       </div>
@@ -279,7 +279,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setSelectedDate(todayIso())}
-            className="text-[13px] text-apricot"
+            className="text-[13px] text-apricot-strong"
           >
             Zurück zu Heute
           </button>
@@ -380,7 +380,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => deleteNote(note.id)}
-                  className="w-11 h-11 flex items-center justify-center text-muted-red"
+                  className="w-11 h-11 flex items-center justify-center text-muted-red-strong"
                   aria-label="Notiz löschen"
                 >
                   <X size={16} />

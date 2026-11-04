@@ -69,7 +69,7 @@ export default function CompleteOnboarding() {
           <>
             <div className="text-5xl">⚠️</div>
             <h2>Da ist etwas schiefgelaufen</h2>
-            <p className="text-muted-red">{error}</p>
+            <p className="text-muted-red-strong">{error}</p>
           </>
         )}
       </div>

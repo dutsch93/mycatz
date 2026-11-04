@@ -24,7 +24,7 @@ export default function DayStrip({
             type="button"
             onClick={() => onSelect(day)}
             className={`flex flex-col items-center justify-center gap-0.5 w-10 h-14 rounded-control ${
-              isSelected ? 'bg-apricot text-text-on-color' : 'text-text-primary'
+              isSelected ? 'bg-apricot-strong text-text-on-color' : 'text-text-primary'
             }`}
           >
             <span className="text-[13px]">{weekdayShort(day)}</span>
