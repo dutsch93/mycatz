@@ -1,15 +1,46 @@
-import { useEffect, useState } from 'react'
-import { X, Nfc, Bell } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { X, Nfc, Bell, Plus } from 'lucide-react'
 import { useAppData } from '../context/AppDataContext'
 import { buildNfcShortcutUrl, isWebNfcSupported, scanNfcTag } from '../lib/nfc'
 import {
   getCurrentSubscription,
   isPushSupported,
+  normalizeReminderTimes,
   subscribeBrowser,
   unsubscribeBrowser,
 } from '../lib/pushNotifications'
 import { supabase } from '../lib/supabase'
 import type { FoodCategory, HabitCategory, HabitType } from '../types'
+
+type SettingsSection = 'reminders' | 'habits' | 'food' | 'nfc' | 'invites' | 'guest'
+
+// Fehlermeldung eines Abschnitts. role="alert" lässt VoiceOver sie sofort vorlesen;
+// scrollIntoView holt sie ins Bild, falls man weiter unten im Abschnitt getippt hat.
+function SectionError({
+  error,
+  section,
+}: {
+  error: { section: SettingsSection; message: string } | null
+  section: SettingsSection
+}) {
+  const ref = useRef<HTMLParagraphElement>(null)
+  const message = error?.section === section ? error.message : null
+
+  useEffect(() => {
+    if (message) ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [message])
+
+  if (!message) return null
+  return (
+    <p
+      ref={ref}
+      role="alert"
+      className="text-[13px] text-muted-red-strong bg-input rounded-control px-3 py-2"
+    >
+      {message}
+    </p>
+  )
+}
 
 const HABIT_TYPE_LABELS: Record<HabitType, string> = {
   boolean: 'Ja/Nein',
@@ -73,15 +104,18 @@ export default function Settings() {
   const [tagIdentifier, setTagIdentifier] = useState('')
   const [scanning, setScanning] = useState(false)
   const [scanError, setScanError] = useState<string | null>(null)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  // Fehler werden im jeweiligen Abschnitt angezeigt (nicht oben auf der Seite), damit man
+  // sie sieht, wo man gerade getippt hat. Apple-HIG: Feedback nahe am betroffenen Element.
+  const [error, setError] = useState<{ section: SettingsSection; message: string } | null>(null)
 
   const [inviteEmail, setInviteEmail] = useState('')
   const [guestLinkLabel, setGuestLinkLabel] = useState('')
 
   const [deviceSubscribed, setDeviceSubscribed] = useState(false)
   const [devicePushBusy, setDevicePushBusy] = useState(false)
-  const [reminderTimesInput, setReminderTimesInput] = useState(
-    (reminderSettings?.times ?? ['08:00', '18:00']).join(', '),
+  // Eine Uhrzeit pro Zeile (statt Komma-Freitext) — so kann iOS sein Uhrzeit-Rad zeigen
+  const [reminderTimes, setReminderTimes] = useState<string[]>(
+    normalizeReminderTimes(reminderSettings?.times ?? ['08:00', '18:00']),
   )
   const [reminderEnabledInput, setReminderEnabledInput] = useState(reminderSettings?.enabled ?? false)
 
@@ -96,12 +130,12 @@ export default function Settings() {
   }, [])
 
   useEffect(() => {
-    setReminderTimesInput((reminderSettings?.times ?? ['08:00', '18:00']).join(', '))
+    setReminderTimes(normalizeReminderTimes(reminderSettings?.times ?? ['08:00', '18:00']))
     setReminderEnabledInput(reminderSettings?.enabled ?? false)
   }, [reminderSettings])
 
   async function handleToggleDevicePush() {
-    setErrorMsg(null)
+    setError(null)
     setDevicePushBusy(true)
     try {
       if (deviceSubscribed) {
@@ -116,22 +150,23 @@ export default function Settings() {
         setDeviceSubscribed(true)
       }
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'reminders', message: friendlyError(err) })
     } finally {
       setDevicePushBusy(false)
     }
   }
 
   async function handleSaveReminderSettings() {
-    setErrorMsg(null)
-    const times = reminderTimesInput
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean)
+    setError(null)
+    const times = normalizeReminderTimes(reminderTimes)
+    if (reminderEnabledInput && times.length === 0) {
+      setError({ section: 'reminders', message: 'Bitte mindestens eine Uhrzeit hinzufügen.' })
+      return
+    }
     try {
       await updateReminderSettings(reminderEnabledInput, times)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'reminders', message: friendlyError(err) })
     }
   }
 
@@ -151,7 +186,7 @@ export default function Settings() {
 
   async function saveNewHabit() {
     if (!newHabitName.trim()) return
-    setErrorMsg(null)
+    setError(null)
     try {
       await addHabit({
         name: newHabitName.trim(),
@@ -167,95 +202,95 @@ export default function Settings() {
       setNewHabitOptions('')
       setNewHabitCategory('daily')
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'habits', message: friendlyError(err) })
     }
   }
 
   async function handleDeleteHabit(id: string) {
-    setErrorMsg(null)
+    setError(null)
     try {
       await deleteHabit(id)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'habits', message: friendlyError(err) })
     }
   }
 
   async function saveNewFoodType() {
     if (!foodName.trim() || !foodPortion) return
-    setErrorMsg(null)
+    setError(null)
     try {
       await addFoodType(foodName.trim(), foodCategory, Number(foodPortion))
       setFoodName('')
       setFoodCategory('custom')
       setFoodPortion('')
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'food', message: friendlyError(err) })
     }
   }
 
   async function handleUpdatePortion(id: string, value: number) {
-    setErrorMsg(null)
+    setError(null)
     try {
       await updateFoodTypePortion(id, value)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'food', message: friendlyError(err) })
     }
   }
 
   async function handleDeleteFoodType(id: string) {
-    setErrorMsg(null)
+    setError(null)
     try {
       await deleteFoodType(id)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'food', message: friendlyError(err) })
     }
   }
 
   async function handleDeleteTag(id: string) {
-    setErrorMsg(null)
+    setError(null)
     try {
       await deleteTag(id)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'nfc', message: friendlyError(err) })
     }
   }
 
   async function handleCreateInvite() {
     if (!inviteEmail.trim()) return
-    setErrorMsg(null)
+    setError(null)
     try {
       await createInvite(inviteEmail.trim())
       setInviteEmail('')
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'invites', message: friendlyError(err) })
     }
   }
 
   async function handleCancelInvite(id: string) {
-    setErrorMsg(null)
+    setError(null)
     try {
       await cancelInvite(id)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'invites', message: friendlyError(err) })
     }
   }
 
   async function handleCreateGuestLink() {
-    setErrorMsg(null)
+    setError(null)
     try {
       await createGuestLink(guestLinkLabel.trim())
       setGuestLinkLabel('')
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'guest', message: friendlyError(err) })
     }
   }
 
   async function handleRevokeGuestLink(id: string) {
-    setErrorMsg(null)
+    setError(null)
     try {
       await revokeGuestLink(id)
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'guest', message: friendlyError(err) })
     }
   }
 
@@ -280,26 +315,20 @@ export default function Settings() {
 
   async function saveTag() {
     if (!foodTypeId || !tagIdentifier.trim()) return
-    setErrorMsg(null)
+    setError(null)
     try {
       await addTag(tagIdentifier.trim(), foodTypeId, label.trim())
       setFoodTypeId('')
       setLabel('')
       setTagIdentifier('')
     } catch (err) {
-      setErrorMsg(friendlyError(err))
+      setError({ section: 'nfc', message: friendlyError(err) })
     }
   }
 
   return (
     <div className="py-6 flex flex-col gap-6">
       <h2>Einstellungen</h2>
-
-      {errorMsg && (
-        <p className="text-[13px] text-muted-red-strong bg-input rounded-control px-3 py-2">
-          {errorMsg}
-        </p>
-      )}
 
       {household && (
         <section className="flex flex-col gap-2">
@@ -312,6 +341,7 @@ export default function Settings() {
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
           Erinnerungen
         </h3>
+        <SectionError error={error} section="reminders" />
 
         <div className="glass flex items-center justify-between px-3 py-3">
           <div className="flex items-center gap-2">
@@ -347,13 +377,40 @@ export default function Settings() {
                 className="w-5 h-5"
               />
             </label>
-            <input
-              type="text"
-              value={reminderTimesInput}
-              onChange={(e) => setReminderTimesInput(e.target.value)}
-              placeholder="Uhrzeiten, mit Komma getrennt (z. B. 08:00, 18:00)"
-              className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border"
-            />
+            <div className="flex flex-col gap-2">
+              <span className="text-[13px] text-text-secondary">Uhrzeiten</span>
+              {reminderTimes.map((time, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    step={900}
+                    value={time}
+                    onChange={(e) =>
+                      setReminderTimes((list) =>
+                        list.map((t, j) => (j === i ? e.target.value : t)),
+                      )
+                    }
+                    aria-label={`Uhrzeit ${i + 1}`}
+                    className="flex-1 min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-text-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setReminderTimes((list) => list.filter((_, j) => j !== i))}
+                    className="w-11 h-11 shrink-0 flex items-center justify-center text-muted-red-strong"
+                    aria-label={`Uhrzeit ${time} entfernen`}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setReminderTimes((list) => [...list, '12:00'])}
+                className="min-h-[44px] px-3 rounded-control bg-input border-[0.5px] border-border text-text-primary flex items-center justify-center gap-1"
+              >
+                <Plus size={16} /> Uhrzeit hinzufügen
+              </button>
+            </div>
             <button
               type="button"
               onClick={handleSaveReminderSettings}
@@ -369,6 +426,7 @@ export default function Settings() {
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
           Habits verwalten
         </h3>
+        <SectionError error={error} section="habits" />
 
         {habits.length > 0 && (
           <div className="flex flex-col gap-2">
@@ -461,6 +519,7 @@ export default function Settings() {
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
           Futterarten verwalten
         </h3>
+        <SectionError error={error} section="food" />
 
         {foodTypes.length > 0 && (
           <div className="flex flex-col gap-2">
@@ -554,6 +613,7 @@ export default function Settings() {
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
           NFC-Tags verwalten
         </h3>
+        <SectionError error={error} section="nfc" />
 
         {nfcTags.length > 0 && (
           <div className="flex flex-col gap-2">
@@ -663,6 +723,7 @@ export default function Settings() {
           <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
             Mitglieder einladen
           </h3>
+          <SectionError error={error} section="invites" />
 
           {invites.length > 0 && (
             <div className="flex flex-col gap-2">
@@ -738,6 +799,7 @@ export default function Settings() {
           <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">
             Gast-Zugang
           </h3>
+          <SectionError error={error} section="guest" />
           <p className="text-[13px] text-text-secondary">
             Gäste können ohne eigenen Account tracken (kein Bearbeiten/Löschen). Der Link läuft
             nach 30 Tagen automatisch ab.

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { isPushSupported, urlBase64ToUint8Array } from './pushNotifications'
+import { isPushSupported, normalizeReminderTimes, urlBase64ToUint8Array } from './pushNotifications'
 
 describe('isPushSupported', () => {
   afterEach(() => {
@@ -43,5 +43,18 @@ describe('urlBase64ToUint8Array', () => {
     expect(standard).toMatch(/[+/]/)
     const urlSafe = standard.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
     expect(Array.from(urlBase64ToUint8Array(urlSafe))).toEqual(bytes)
+  })
+})
+
+describe('normalizeReminderTimes', () => {
+  it('kürzt Postgres-Zeiten mit Sekunden auf HH:MM', () => {
+    expect(normalizeReminderTimes(['08:00:00', '18:30:00'])).toEqual(['08:00', '18:30'])
+  })
+
+  it('entfernt leere, ungültige und doppelte Einträge und sortiert', () => {
+    expect(normalizeReminderTimes(['18:00', '', '25:00', '08:00', '18:00', 'abc'])).toEqual([
+      '08:00',
+      '18:00',
+    ])
   })
 })

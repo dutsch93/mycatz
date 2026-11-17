@@ -30,7 +30,7 @@ aufweichen, nur um eine Änderung durchzubekommen.
 | Metrik                          | Stand 2026-09-22 | Richtung        |
 |----------------------------------|-------------------|-----------------|
 | Projekt-Coverage (Statements)    | 1.76%             | darf nicht sinken |
-| Bundle-Größe (JS, gzip)          | ~256 kB            | darf nicht wachsen |
+| Bundle-Größe (JS, gzip)          | ~257 kB            | darf nicht wachsen |
 
 Bundle-Größe am 2026-09-22 von ~241 kB auf ~249 kB angehoben: Liquid-
 Glass-Umbau hat `lucide-react` als neue Dependency eingeführt (viele
@@ -55,6 +55,11 @@ angehoben: zweite Trend-Sparkline (Spielzeit) in WeekTrendTile.
 Bundle-Größe am 2026-11-03 von ~255 kB auf ~256 kB angehoben (+0,75 kB):
 ausklappbare Aktivitäts-Einträge mit Uhrzeit-Bearbeitung (Home.tsx) und
 Tipp-Zähler für Zähl-Habits (HabitItem.tsx, neue lib/habitCount.ts).
+
+Bundle-Größe am 2026-11-17 von ~256 kB auf ~257 kB angehoben (+1 kB):
+Apple-Design-Review Statistik/Einstellungen — Ziellinie in den Diagrammen
+(Recharts `ReferenceLine` neu im Bundle), barrierefreie Heatmap,
+Uhrzeit-Auswahl für Erinnerungen, Fehlermeldungen pro Abschnitt.
 
 Die Projekt-Coverage ist niedrig, weil bisher nur reine Logik (`src/lib/`)
 getestet ist — UI-Screens/Hooks haben noch keine Tests. Das ist der

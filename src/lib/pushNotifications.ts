@@ -60,3 +60,12 @@ export async function unsubscribeBrowser(): Promise<void> {
   const subscription = await getCurrentSubscription()
   if (subscription) await subscription.unsubscribe()
 }
+
+// Erinnerungszeiten fürs Speichern aufbereiten: Postgres liefert TIME als "08:00:00",
+// das Uhrzeit-Feld als "08:00". Ergebnis: nur gültige "HH:MM", ohne Doppelte, sortiert.
+export function normalizeReminderTimes(times: string[]): string[] {
+  const valid = times
+    .map((t) => t.trim().slice(0, 5))
+    .filter((t) => /^([01]\d|2[0-3]):[0-5]\d$/.test(t))
+  return Array.from(new Set(valid)).sort()
+}

@@ -68,3 +68,27 @@ export function combineDateAndTime(dateIso: string, time: string): string {
   const [hh, mm] = time.split(':').map(Number)
   return new Date(y, m - 1, d, hh, mm).toISOString()
 }
+
+// Wochentag-Index mit Montag = 0 … Sonntag = 6 (JS liefert Sonntag = 0).
+export function mondayIndex(iso: string): number {
+  const [y, m, d] = iso.split('-').map(Number)
+  return (new Date(y, m - 1, d).getDay() + 6) % 7
+}
+
+// Füllt eine aufsteigende Liste von Tagen vorne mit null auf, damit der erste Tag
+// in der richtigen Wochentag-Spalte (Mo–So) eines 7-Spalten-Rasters landet.
+export function padToMondayGrid(dates: string[]): (string | null)[] {
+  if (dates.length === 0) return []
+  const lead: null[] = Array.from({ length: mondayIndex(dates[0]) }, () => null)
+  return [...lead, ...dates]
+}
+
+// Kurzes Datum für Screenreader und Beschriftungen, z. B. "Di., 12. Nov.".
+export function formatShortDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('de-DE', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  })
+}

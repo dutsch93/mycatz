@@ -7,6 +7,8 @@ import {
   lastDays,
   lastMonths,
   monthShortLabel,
+  mondayIndex,
+  padToMondayGrid,
   timeOfDay,
   toIsoDate,
   weekdayShort,
@@ -115,5 +117,25 @@ describe('timeOfDay / combineDateAndTime', () => {
     const ts = combineDateAndTime('2026-11-03', '18:42')
     expect(timeOfDay(ts)).toBe('18:42')
     expect(new Date(ts).getDate()).toBe(3)
+  })
+})
+
+describe('mondayIndex / padToMondayGrid', () => {
+  it('zählt Montag als 0 und Sonntag als 6', () => {
+    expect(mondayIndex('2026-11-16')).toBe(0) // Montag
+    expect(mondayIndex('2026-11-22')).toBe(6) // Sonntag
+  })
+
+  it('beginnt an einem Montag ohne Auffüllen', () => {
+    expect(padToMondayGrid(['2026-11-16', '2026-11-17'])).toEqual(['2026-11-16', '2026-11-17'])
+  })
+
+  it('füllt bis zum Wochentag des ersten Tages mit null auf', () => {
+    // 2026-11-19 ist ein Donnerstag → drei leere Felder (Mo, Di, Mi)
+    expect(padToMondayGrid(['2026-11-19'])).toEqual([null, null, null, '2026-11-19'])
+  })
+
+  it('gibt bei leerer Liste ein leeres Raster zurück', () => {
+    expect(padToMondayGrid([])).toEqual([])
   })
 })

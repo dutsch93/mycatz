@@ -5,6 +5,7 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -82,6 +83,10 @@ export default function Stats() {
       playLogs.filter((l) => l.date === date).reduce((sum, l) => sum + l.duration_min, 0),
     )
   }, [range, days, playLogs])
+
+  // Die Tages-Ziellinie passt nur zu Tagesbalken (Woche/Monat). Im Jahr zeigen die
+  // Balken Monatssummen — eine Tages-Ziellinie wäre dort irreführend.
+  const showTargetLine = range !== 'year'
 
   const avgFoodG = feedingLogs.reduce((sum, l) => sum + l.amount_g, 0) / days
   const avgPlayMin = playLogs.reduce((sum, l) => sum + l.duration_min, 0) / days
@@ -173,17 +178,38 @@ export default function Stats() {
 
       <section className="flex flex-col gap-2">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">Futter</h3>
-        <GlassCard className="p-3" style={{ height: 160 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={foodChartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip />
-              <Bar dataKey="value" fill="var(--color-sage)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </GlassCard>
+        <div
+          role="img"
+          aria-label={`Futter pro ${range === 'year' ? 'Monat' : 'Tag'}: im Schnitt ${Math.round(avgFoodG)} Gramm pro Tag${foodTargetG > 0 ? `, Ziel ${foodTargetG} Gramm` : ''}.`}
+        >
+          <GlassCard className="p-3" style={{ height: 160 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={foodChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip />
+                {/* Kontur in der kräftigen Variante: helle Füllung allein hat auf Glas < 3:1 */}
+                <Bar
+                  dataKey="value"
+                  fill="var(--color-sage)"
+                  stroke="var(--color-sage-strong)"
+                  strokeWidth={1}
+                  radius={[4, 4, 0, 0]}
+                />
+                {showTargetLine && foodTargetG > 0 && (
+                  <ReferenceLine
+                    y={foodTargetG}
+                    stroke="var(--text-primary)"
+                    strokeDasharray="4 4"
+                    ifOverflow="extendDomain"
+                    label={{ value: 'Ziel', position: 'insideTopRight', fontSize: 11, fill: 'var(--text-primary)' }}
+                  />
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+          </GlassCard>
+        </div>
         <p className="text-[13px] text-text-secondary">
           Ø {Math.round(avgFoodG)}g / Tag {foodTargetG > 0 && <>· Ziel: {foodTargetG}g</>}
         </p>
@@ -191,17 +217,37 @@ export default function Stats() {
 
       <section className="flex flex-col gap-2">
         <h3 className="text-[13px] text-text-secondary uppercase tracking-wide">Spielzeit</h3>
-        <GlassCard className="p-3" style={{ height: 160 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={playChartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip />
-              <Bar dataKey="value" fill="var(--color-apricot)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </GlassCard>
+        <div
+          role="img"
+          aria-label={`Spielzeit pro ${range === 'year' ? 'Monat' : 'Tag'}: im Schnitt ${Math.round(avgPlayMin)} Minuten pro Tag${playTargetMin > 0 ? `, Ziel ${playTargetMin} Minuten` : ''}.`}
+        >
+          <GlassCard className="p-3" style={{ height: 160 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={playChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip />
+                <Bar
+                  dataKey="value"
+                  fill="var(--color-apricot)"
+                  stroke="var(--color-apricot-strong)"
+                  strokeWidth={1}
+                  radius={[4, 4, 0, 0]}
+                />
+                {showTargetLine && playTargetMin > 0 && (
+                  <ReferenceLine
+                    y={playTargetMin}
+                    stroke="var(--text-primary)"
+                    strokeDasharray="4 4"
+                    ifOverflow="extendDomain"
+                    label={{ value: 'Ziel', position: 'insideTopRight', fontSize: 11, fill: 'var(--text-primary)' }}
+                  />
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+          </GlassCard>
+        </div>
         <p className="text-[13px] text-text-secondary">
           Ø {Math.round(avgPlayMin)} min / Tag {playTargetMin > 0 && <>· Ziel: {playTargetMin} min</>}
         </p>
@@ -249,9 +295,9 @@ export default function Stats() {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="var(--color-apricot)"
+                  stroke="var(--text-primary)"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  dot={{ r: 3, fill: 'var(--text-primary)' }}
                 />
               </LineChart>
             </ResponsiveContainer>
